@@ -12,6 +12,7 @@ const TFL = 'tfl-api';
 export default {
   id: 'transport',
   label: 'Transport',
+  short: 'Transport',
   registryIds: [OSM, TFL],
 
   async run(place) {

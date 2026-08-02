@@ -6,7 +6,8 @@
 import { loadRegistry, registryAnchor } from './registry.js';
 import { lookup, normalise, pretty, PostcodeError } from './geo.js';
 import { STATUS } from './facts.js';
-import { narrate } from './narrate.js';
+import { narrate, headlineFact } from './narrate.js';
+import { worstTone } from './thresholds.js';
 import { PROVIDERS } from './providers/index.js';
 import { mountAI, resetAI } from './ai.js';
 
@@ -15,6 +16,7 @@ const el = {
   pc: document.getElementById('pc'),
   hint: document.getElementById('hint'),
   place: document.getElementById('place'),
+  tiles: document.getElementById('tiles'),
   anchors: document.getElementById('anchors'),
   progress: document.getElementById('progress'),
   cards: document.getElementById('cards'),
@@ -27,37 +29,64 @@ let currentRun = 0;
 
 const esc = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 
+// Four distinct shapes, so status survives greyscale, print and colour
+// blindness. Colour is a reinforcement, never the only channel.
+const GLYPH = { good: '▲', neutral: '●', watch: '◆', poor: '▼' };
+
+const glyph = tone => `<span class="glyph" aria-hidden="true">${GLYPH[tone] || GLYPH.neutral}</span>`;
+
 /* ---------------------------------------------------------------- rendering */
 
 function badgeFor(res) {
   if (res.status === STATUS.OK || res.status === STATUS.PARTIAL) {
     return res.mode === 'pack' ? 'pre-built extract' : 'live';
   }
-  return { [STATUS.UNAVAILABLE]: 'unavailable', [STATUS.OUT_OF_COVERAGE]: 'not covered here',
-           [STATUS.ERROR]: 'unavailable' }[res.status];
+  return { [STATUS.UNAVAILABLE]: 'no data', [STATUS.OUT_OF_COVERAGE]: 'not covered here',
+           [STATUS.ERROR]: 'no data' }[res.status];
 }
 
-// A thin bar showing where the value sits relative to its benchmark. Purely
-// supplementary — the number and the benchmark are both in the row already.
-function barFor(f) {
-  if (!f.comparison || !f.comparison.ratio) return '';
-  const pos = Math.max(0, Math.min(1, f.comparison.ratio / 2)); // 1.0x sits mid-bar
-  return `<span class="bar" aria-hidden="true"><b style="width:${(pos * 100).toFixed(0)}%"></b><i style="left:50%"></i></span>`;
+/** The line every fact in this card shares, hoisted out of the rows. */
+function scopeLine(res) {
+  const geos = new Set(res.facts.map(f => f.geography
+    ? `${f.geography.level}: ${f.geography.name || f.geography.code}` : null).filter(Boolean));
+  const periods = new Set(res.facts.map(f => f.period).filter(Boolean));
+  const parts = [];
+  if (geos.size === 1) parts.push([...geos][0]);
+  if (periods.size === 1) parts.push([...periods][0]);
+  return parts.join(' · ');
 }
 
-function factsTable(res) {
-  if (!res.facts.length) return '';
-  return `<table class="facts">
-    <thead><tr><th>Measure</th><th>Value</th><th>Benchmark</th><th>Period</th></tr></thead>
-    <tbody>${res.facts.map(f => {
-      const bench = f.benchmarks[0];
-      return `<tr>
-        <td>${esc(f.label)}${f.geography ? `<span class="note">${esc(f.geography.level)}: ${esc(f.geography.name || f.geography.code)}</span>` : ''}${f.note ? `<span class="note">${esc(f.note)}</span>` : ''}</td>
-        <td class="val">${esc(f.display)}${barFor(f)}</td>
-        <td class="bench">${bench ? `${esc(bench.display ?? bench.value)}<span class="note">${esc(bench.name || bench.scope)}</span>` : '—'}</td>
-        <td class="bench">${esc(f.period || '—')}</td>
-      </tr>`;
-    }).join('')}</tbody></table>`;
+// A thin track with the value's position and a tick where the benchmark sits.
+// Only drawn when there is a benchmark to sit against — a bar with nothing to
+// compare to is decoration.
+function meter(f) {
+  const c = f.comparison;
+  if (!c || !c.ratio) return '';
+  // The tick is the benchmark; it is already named in the band pill beside the
+  // value, so the track carries no label of its own.
+  const mid = 50;
+  const pos = Math.max(3, Math.min(100, (c.ratio / 2) * 100));
+  return `<div class="meter t-${esc(c.tone)}">
+    <b style="width:${pos.toFixed(1)}%"></b>
+    <i style="left:${mid}%"></i>
+  </div>`;
+}
+
+function factRow(f, hideScope) {
+  const c = f.comparison;
+  const long = String(f.display).length > 14;
+  const shared = hideScope ? '' : [
+    f.geography ? `${f.geography.level}: ${f.geography.name || f.geography.code}` : '',
+    f.period || '',
+  ].filter(Boolean).join(' · ');
+  const meterHTML = meter(f);
+  return `<div class="fact${meterHTML ? ' has-meter' : ''}">
+    <div class="flabel">${esc(f.label)}</div>
+    <div class="fvalue${long ? ' long' : ''}">${esc(f.display)}</div>
+    ${shared || f.note ? `<div class="fmeta">${esc([shared, f.note].filter(Boolean).join(' · '))}</div>` : ''}
+    ${c?.band ? `<div class="fband"><span class="pill t-${esc(c.tone)}">${glyph(c.tone)}${esc(c.band)}${c.vs ? ` ${esc(c.vsName || c.vs)}` : ''}</span></div>` : ''}
+    ${meterHTML}
+  </div>`;
 }
 
 function sourceLines(res) {
@@ -74,14 +103,40 @@ function altLink(res) {
   return `<p class="srcline"><a href="${esc(res.alt.url)}" target="_blank" rel="noopener">${esc(res.alt.label)} ↗</a></p>`;
 }
 
+function notesBlock(res) {
+  const notes = [...res.notes];
+  if (res.status === STATUS.PARTIAL) {
+    notes.unshift(`Some figures are missing: ${res.errors.map(e => e.label || e.sourceId).join(', ')} did not respond.`);
+  }
+  if (!notes.length || res.status === STATUS.OUT_OF_COVERAGE) return '';
+  return `<details class="notes"><summary>Notes and caveats (${notes.length})</summary>
+    ${notes.map(n => `<p>${esc(n)}</p>`).join('')}</details>`;
+}
+
+// A provider may name the geography it actually describes (Ofcom publishes
+// mobile coverage by local authority, not by postcode).
+const titleOf = (provider, place) =>
+  (place && provider.labelFor ? provider.labelFor(place) : provider.label);
+
 function cardHTML(provider, res, place) {
+  const shared = scopeLine(res);
+  const tone = worstTone(res.facts);
+  const summary = narrate(res, place, { skipNotes: true });
+
+  // Geography and period are stated once above the rows when every fact shares
+  // them, instead of repeating under each one.
+  const rows = res.facts.map(f => factRow(f, Boolean(shared))).join('');
+
   return `<div class="card cat" id="cat-${esc(provider.id)}">
     <div class="head">
-      <h2>${esc(provider.label)}</h2>
-      <span class="badge ${esc(res.status === STATUS.PARTIAL ? 'partial' : res.status)}">${esc(badgeFor(res))}</span>
+      <h2>${esc(titleOf(provider, place))}</h2>
+      <span class="badge ${esc(res.status === STATUS.PARTIAL ? 'live' : res.status)}">${esc(badgeFor(res))}</span>
+      ${tone ? `<span class="pill t-${esc(tone)}">${glyph(tone)}${esc({ good: 'looks good', watch: 'worth a look', poor: 'needs attention' }[tone])}</span>` : ''}
     </div>
-    <p class="narr">${esc(narrate(res, place))}</p>
-    ${factsTable(res)}
+    ${shared ? `<p class="scope">${esc(shared)}</p>` : ''}
+    <p class="narr">${esc(summary)}</p>
+    ${rows}
+    ${notesBlock(res)}
     ${altLink(res)}
     ${sourceLines(res)}
   </div>`;
@@ -92,6 +147,28 @@ function skeleton(provider) {
     <div class="head"><h2>${esc(provider.label)}</h2><span class="badge">loading</span></div>
     <div class="line"></div><div class="line"></div><div class="line short"></div>
   </div>`;
+}
+
+function tileHTML(provider, res) {
+  const name = provider.short || provider.label;
+  if (!res) {
+    return `<a class="tile t-off" href="#cat-${esc(provider.id)}">
+      <span class="cat-name">${esc(name)}</span>
+      <span class="figure small">…</span></a>`;
+  }
+  const head = headlineFact(res);
+  const c = head?.comparison;
+  const tone = c?.tone || worstTone(res.facts);
+  const off = !res.facts.length;
+  const status = off
+    ? { [STATUS.OUT_OF_COVERAGE]: 'not covered here', [STATUS.UNAVAILABLE]: 'no data yet' }[res.status] || 'no data'
+    : (c?.band ? `${c.band}${c.vs ? ` ${c.vsName || c.vs}` : ''}` : head?.label || '');
+  const figure = off ? '—' : head.display;
+  return `<a class="tile ${off ? 't-off' : `t-${esc(tone || 'neutral')}`}" href="#cat-${esc(provider.id)}">
+    <span class="cat-name">${esc(name)}</span>
+    <span class="figure${String(figure).length > 12 ? ' small' : ''}">${esc(figure)}</span>
+    <span class="status">${tone && !off ? glyph(tone) : ''}${esc(status)}</span>
+  </a>`;
 }
 
 function renderPlace(place) {
@@ -110,16 +187,22 @@ function renderPlace(place) {
 
 /* ------------------------------------------------------------------- errors */
 
-function showPostcodeError(err) {
-  const sugg = (err.suggestions || []).slice(0, 5);
-  el.hint.innerHTML = `<span class="err">${esc(err.message)}</span>` +
-    (sugg.length ? ` Did you mean ${sugg.map(s => `<a data-eg="${esc(s)}">${esc(s)}</a>`).join(', ')}?` : '');
+function clear() {
   el.place.innerHTML = '';
+  el.tiles.innerHTML = '';
+  el.tiles.hidden = true;
   el.cards.innerHTML = '';
   el.ai.innerHTML = '';
   el.anchors.hidden = true;
   el.progress.textContent = '';
   el.copylink.hidden = true;
+}
+
+function showPostcodeError(err) {
+  const sugg = (err.suggestions || []).slice(0, 5);
+  el.hint.innerHTML = `<span class="err">${esc(err.message)}</span>` +
+    (sugg.length ? ` Did you mean ${sugg.map(s => `<a data-eg="${esc(s)}">${esc(s)}</a>`).join(', ')}?` : '');
+  clear();
 }
 
 /* ------------------------------------------------------------------ the run */
@@ -139,14 +222,16 @@ async function run(input) {
   if (runId !== currentRun) return;
 
   el.pc.value = place.postcode;
-  el.hint.textContent = 'Each section below is fetched independently and appears as it arrives.';
+  el.hint.textContent = 'Each section is fetched independently and appears as it arrives.';
   history.replaceState(null, '', `?postcode=${encodeURIComponent(place.compact)}`);
   el.copylink.hidden = false;
   renderPlace(place);
 
   const active = PROVIDERS;
   el.anchors.hidden = false;
-  el.anchors.innerHTML = active.map(p => `<a class="pill" href="#cat-${esc(p.id)}">${esc(p.label)}</a>`).join('');
+  el.anchors.innerHTML = active.map(p => `<a class="pill" href="#cat-${esc(p.id)}">${esc(p.short || p.label)}</a>`).join('');
+  el.tiles.hidden = false;
+  el.tiles.innerHTML = active.map(p => tileHTML(p, null)).join('');
   el.cards.innerHTML = active.map(skeleton).join('');
   resetAI(el.ai);
 
@@ -172,6 +257,7 @@ async function run(input) {
     if (runId !== currentRun) return;
     settled[i] = res;
     document.getElementById(`cat-${provider.id}`).outerHTML = cardHTML(provider, res, place);
+    el.tiles.children[i].outerHTML = tileHTML(provider, res);
     el.progress.textContent = `${++done} of ${active.length} sections loaded`;
   }));
 

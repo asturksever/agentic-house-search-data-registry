@@ -37,6 +37,7 @@ function previousMonth(ym, back) {
 export default {
   id: 'crime',
   label: 'Crime',
+  short: 'Crime',
   registryIds: [SOURCE],
 
   coverage(place) {

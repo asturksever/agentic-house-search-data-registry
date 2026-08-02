@@ -9,6 +9,7 @@ const SOURCE = 'ons-census-2021';
 export default {
   id: 'demographics',
   label: 'Who lives here',
+  short: 'Residents',
   registryIds: [SOURCE],
 
   coverage(place) {

@@ -24,6 +24,48 @@ Both pages fetch `data/registry.json` at runtime, so they need to be served over
 HTTP rather than opened from disk: `python3 -m http.server 8000`, then
 <http://localhost:8000/>.
 
+## Postcode report
+
+[`report.html`](report.html) is the registry pointed at a single postcode: enter
+one and it fetches the real values out of these sources and writes a plain
+paragraph per category — who lives here, crime, deprivation, prices, fibre, 5G,
+noise, transport, amenities, schools, planning constraints.
+
+It runs entirely in the browser. Most sources are called directly (postcodes.io,
+data.police.uk, Nomis, HM Land Registry, Planning Data, the Environment Agency,
+TfL, Overpass); the three that publish bulk files instead of an API — Ofcom
+fibre, Ofcom mobile, the DfE school register — are pre-joined into `packs/` by
+[`tools/packbuild`](tools/packbuild/README.md).
+
+Results open with a tile per category — the headline figure and how it rates —
+then one card each with the numbers behind it. Ratings are colour-coded, but
+never by colour alone: each carries a glyph (▲ good, ● typical, ◆ worth a look,
+▼ needs attention) and the band in words, so the meaning survives greyscale,
+printing and colour blindness. Categories that cannot be judged good or bad — a
+house price is neither — stay deliberately uncoloured.
+
+Two things it will not do. It never invents a comparison: every band word
+("above the UK average") comes from `js/thresholds.js` and always sits next to
+the figure it describes, which is in the table below the paragraph. And it never
+pretends to cover ground it does not — a Scottish postcode gets an explicit
+"data.police.uk does not publish Scottish data" with a link to Police Scotland,
+not a blank card. Deprivation deciles are computed against each nation's own
+index and denominator.
+
+An **AI summary** is optional and off by default. There is no server here to
+keep an API key in, so it uses one you paste yourself, stored in your own
+browser and sent to nothing but `api.anthropic.com`. The model is given only
+the computed facts, and every number it writes back is checked against them —
+anything untraceable is flagged rather than shown quietly. Without a key there
+is a "copy the prompt" button, and the report is complete either way.
+
+Local development (both pages fetch `data/registry.json`, which `file://`
+blocks):
+
+```bash
+python3 -m http.server 8000   # then http://localhost:8000/report.html?postcode=SW111AA
+```
+
 ## Schema
 
 ```json

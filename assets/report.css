@@ -1,5 +1,25 @@
 /* Report-only layout. Shared primitives live in base.css. */
 
+/* Status colours are a reserved four-step scale, never reused for anything
+   decorative. They are picked per mode rather than flipped: the light steps
+   clear 3:1 on a white card, the dark steps clear it on the dark card.
+   Red-amber-green cannot be told apart by hue alone under common colour
+   vision deficiencies, so every use pairs the colour with a distinct glyph
+   shape AND the band word — colour is the third channel here, never the only
+   one, and numbers stay in ink rather than wearing the status colour. */
+:root{
+  --tone-good:#0a7d32; --tone-neutral:#5b6575; --tone-watch:#8a5a00; --tone-poor:#c62f2f;
+  --tone-good-soft:#e8f5ec; --tone-neutral-soft:#eef1f5;
+  --tone-watch-soft:#fbf2e3; --tone-poor-soft:#fdeaea;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --tone-good:#5fd39a; --tone-neutral:#9aa5b5; --tone-watch:#e8a933; --tone-poor:#f5827c;
+    --tone-good-soft:#12301f; --tone-neutral-soft:#222c44;
+    --tone-watch-soft:#332510; --tone-poor-soft:#3a1c1c;
+  }
+}
+
 .searchrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 10px}
 .searchrow input{max-width:280px;text-transform:uppercase}
 .hint{color:var(--muted);font-size:13px;margin:0 0 18px}
@@ -8,36 +28,84 @@
 .place{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:0 0 16px}
 .place h2{font-size:20px;margin:0 0 4px}
 .place .meta{color:var(--muted);font-size:13.5px;margin:0}
-.place .badges{margin-top:10px}
+
+/* ---------------------------------------------------------- summary tiles */
+/* One tile per category: the headline figure, and its status as shape + word
+   + colour. This is the whole report at a glance; the cards are the detail. */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px;margin:0 0 20px}
+/* Only judged categories carry a colour, so the eye goes to what is actually
+   good or bad rather than to every tile equally. */
+.tile{display:block;text-decoration:none;color:inherit;background:var(--card);
+  border:1px solid var(--line);border-left:3px solid var(--line);
+  border-radius:12px;padding:11px 13px}
+.tile:hover{border-color:var(--accent);border-left-color:var(--accent)}
+.tile .cat-name{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--muted);font-weight:700;margin:0 0 5px}
+.tile .figure{display:block;font-size:19px;font-weight:650;font-variant-numeric:tabular-nums;
+  line-height:1.2;margin:0 0 4px}
+.tile .figure.small{font-size:15px;font-weight:600}
+.tile .status{font-size:12.5px;color:var(--muted)}
+.tile.t-good{border-left-color:var(--tone-good)}
+.tile.t-watch{border-left-color:var(--tone-watch)}
+.tile.t-poor{border-left-color:var(--tone-poor)}
+.tile.t-off{border-left-color:var(--line);opacity:.72}
+
+/* The glyph is the accessible half of the status: four distinct shapes, so
+   the meaning survives greyscale, print and colour blindness. */
+.glyph{font-size:11px;line-height:1;margin-right:4px}
+.t-good .glyph,.pill.t-good .glyph{color:var(--tone-good)}
+.t-neutral .glyph,.pill.t-neutral .glyph{color:var(--tone-neutral)}
+.t-watch .glyph,.pill.t-watch .glyph{color:var(--tone-watch)}
+.t-poor .glyph,.pill.t-poor .glyph{color:var(--tone-poor)}
 
 .anchors{position:sticky;top:0;z-index:2;background:var(--bg);padding:8px 0;margin:0 0 12px;
   display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
 
-/* The anchor row is sticky, so a jumped-to card must clear it. */
+/* ----------------------------------------------------------------- cards */
 .cat{scroll-margin-top:64px}
 .cat h2{font-size:17px;margin:0}
-.cat .head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin:0 0 8px}
-.narr{margin:0 0 12px}
+.cat .head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 4px}
+.cat .scope{color:var(--muted);font-size:12.5px;margin:0 0 10px}
+.narr{margin:0 0 14px}
+
 .badge{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;
   border-radius:6px;padding:2px 7px;background:var(--chip);color:var(--muted)}
 .badge.live{background:var(--accent-soft);color:var(--accent)}
-.badge.pack{background:var(--chip);color:var(--muted)}
-.badge.partial{color:var(--warn)}
 .badge.unavailable,.badge.out_of_coverage{color:var(--muted)}
 .badge.error{color:var(--bad)}
 
-table.facts{width:100%;border-collapse:collapse;font-size:13.5px;margin:0 0 10px}
-table.facts th{text-align:left;font-weight:600;color:var(--muted);font-size:12px;
-  text-transform:uppercase;letter-spacing:.05em;padding:0 8px 6px 0;border-bottom:1px solid var(--line)}
-table.facts td{padding:7px 8px 7px 0;border-bottom:1px solid var(--line);vertical-align:top}
-table.facts td.val{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
-table.facts td.bench{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-table.facts .note{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
-.bar{position:relative;height:6px;border-radius:3px;background:var(--chip);min-width:90px;margin-top:6px}
-.bar i{position:absolute;top:-2px;width:2px;height:10px;background:var(--muted)}
-.bar b{position:absolute;top:0;height:6px;border-radius:3px;background:var(--accent)}
+/* A fact is a label, a value, and — when it can be judged — a band and a meter. */
+.fact{display:grid;grid-template-columns:1fr auto;gap:2px 16px;align-items:baseline;
+  padding:11px 0;border-top:1px solid var(--line)}
+.fact:first-of-type{border-top:0}
+.fact .flabel{font-size:14px}
+.fact .fvalue{font-size:17px;font-weight:650;font-variant-numeric:tabular-nums;
+  white-space:nowrap;text-align:right}
+.fact .fvalue.long{font-size:14px;font-weight:600;white-space:normal;max-width:22ch}
+.fact .fmeta{grid-column:1;color:var(--muted);font-size:12.5px}
+.fact .fband{grid-column:2;text-align:right}
 
-.srcline{color:var(--muted);font-size:12.5px;margin:10px 0 0;border-top:1px solid var(--line);padding-top:8px}
+.pill{display:inline-block;font-size:12px;border-radius:999px;padding:2px 9px;
+  background:var(--tone-neutral-soft);color:var(--ink);white-space:normal}
+.pill.t-good{background:var(--tone-good-soft)}
+.pill.t-watch{background:var(--tone-watch-soft)}
+.pill.t-poor{background:var(--tone-poor-soft)}
+
+/* Thin mark, rounded data-end, baseline tick where the benchmark sits. */
+.meter{grid-column:1 / -1;position:relative;height:6px;border-radius:3px;
+  background:var(--chip);margin-top:8px;overflow:visible}
+.meter b{position:absolute;left:0;top:0;height:6px;border-radius:3px;background:var(--tone-neutral)}
+.meter.t-good b{background:var(--tone-good)}
+.meter.t-watch b{background:var(--tone-watch)}
+.meter.t-poor b{background:var(--tone-poor)}
+.meter i{position:absolute;top:-3px;width:2px;height:12px;background:var(--muted);border-radius:1px}
+.fact.has-meter{padding-bottom:14px}
+
+details.notes{margin:12px 0 0}
+details.notes summary{cursor:pointer;color:var(--muted);font-size:13px}
+details.notes p{color:var(--muted);font-size:13px;margin:8px 0 0}
+
+.srcline{color:var(--muted);font-size:12.5px;margin:12px 0 0;border-top:1px solid var(--line);padding-top:8px}
 .srcline a{color:var(--accent);text-decoration:none}
 .srcline + .srcline{border-top:0;padding-top:2px}
 
@@ -48,7 +116,7 @@ table.facts .note{display:block;color:var(--muted);font-size:12.5px;margin-top:2
 
 .ai{border:1px dashed var(--line);border-radius:12px;padding:14px 16px;margin:0 0 16px}
 .ai h3{margin:0 0 6px;font-size:15px}
-.ai .warn{color:var(--warn);font-size:13px}
+.ai .warn{color:var(--tone-watch);font-size:13px}
 .ai textarea{width:100%;min-height:120px;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
 .progress{color:var(--muted);font-size:13px;margin:0 0 12px}
 
@@ -58,12 +126,16 @@ table.facts .note{display:block;color:var(--muted);font-size:12.5px;margin-top:2
   /* Eleven wrapped pills eat half the screen; scroll them sideways instead. */
   .anchors{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
   .anchors .pill{white-space:nowrap}
-  table.facts td.bench{display:none}
-  table.facts th:nth-child(3){display:none}
+  .tiles{grid-template-columns:repeat(auto-fill,minmax(148px,1fr))}
+  .fact{grid-template-columns:1fr}
+  .fact .fvalue,.fact .fband{text-align:left}
+  .fact .fband{grid-column:1}
 }
 
 @media print{
   body{padding:0;background:#fff;color:#000}
   .anchors,.searchrow,.hint,.ai,.nav,.btn{display:none !important}
-  .card,.place{break-inside:avoid;border-color:#ccc}
+  .card,.place,.tile{break-inside:avoid;border-color:#ccc}
+  details.notes{display:block}
+  details.notes[open] summary{list-style:none}
 }

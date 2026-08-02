@@ -8,15 +8,17 @@ import { noteFailure } from './_util.js';
 const SOURCE = 'ofcom-broadband';
 const CHECKER = { label: 'Check this postcode on the Ofcom broadband checker', url: 'https://checker.ofcom.org.uk/' };
 
+// [pack field, fact key, table label, short name for prose]
 const MEASURES = [
-  ['gigabit', 'broadband.gigabit_pct', 'Premises able to get gigabit broadband'],
-  ['ufbb', 'broadband.ufbb_pct', 'Premises able to get ultrafast (300 Mbit/s+)'],
-  ['sfbb', 'broadband.sfbb_pct', 'Premises able to get superfast (30 Mbit/s+)'],
+  ['gigabit', 'broadband.gigabit_pct', 'Premises able to get gigabit broadband', 'gigabit'],
+  ['ufbb', 'broadband.ufbb_pct', 'Premises able to get ultrafast (300 Mbit/s+)', 'ultrafast'],
+  ['sfbb', 'broadband.sfbb_pct', 'Premises able to get superfast (30 Mbit/s+)', 'superfast'],
 ];
 
 export default {
   id: 'broadband',
   label: 'Broadband and fibre',
+  short: 'Broadband',
   registryIds: [SOURCE],
 
   async run(place) {
@@ -48,15 +50,15 @@ export default {
     const note = exact ? null
       : 'This postcode shares the most common values for its area rather than being listed separately.';
 
-    for (const [field, key, label] of MEASURES) {
+    for (const [field, key, label, shortLabel] of MEASURES) {
       const value = row[field];
       if (typeof value !== 'number') continue;
       const mean = uk?.broadband?.[field]?.mean;
       res.facts.push(fact({
-        key, label, value, display: fmt.pct(value), kind: 'percent', unit: '%',
+        key, label, shortLabel, value, display: fmt.pct(value), kind: 'percent', unit: '%',
         geography, period, sourceId: SOURCE, note,
         benchmarks: typeof mean === 'number'
-          ? [{ scope: 'uk', name: 'UK average postcode', value: mean, display: fmt.pct(mean, 1) }]
+          ? [{ scope: 'uk', name: 'UK average', value: mean, display: fmt.pct(mean, 1) }]
           : [],
       }));
     }

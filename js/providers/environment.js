@@ -26,6 +26,7 @@ const DATASETS = [
 export default {
   id: 'environment',
   label: 'Environment and planning constraints',
+  short: 'Environment',
   registryIds: [PLANNING, FLOOD],
 
   coverage(place) {

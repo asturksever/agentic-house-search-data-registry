@@ -25,6 +25,7 @@ const COUNTS = [
 export default {
   id: 'amenities',
   label: 'Amenities within walking distance',
+  short: 'Amenities',
   registryIds: [SOURCE],
 
   async run(place) {

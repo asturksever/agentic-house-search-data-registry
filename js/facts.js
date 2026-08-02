@@ -40,6 +40,10 @@ export function fact(spec) {
   const f = {
     key: spec.key,
     label: spec.label,
+    // Table rows can afford "Premises able to get ultrafast (300 Mbit/s+)";
+    // a sentence cannot. Providers give the narrator a shorter noun phrase
+    // where the full label would read badly in prose.
+    shortLabel: spec.shortLabel || spec.label,
     value: spec.value,
     unit: spec.unit || '',
     display: spec.display,

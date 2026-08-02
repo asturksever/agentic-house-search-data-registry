@@ -21,6 +21,11 @@ const HEADLINE = {
   environment: ['environment.flood_zone', 'environment.designations', 'environment.flood_warnings'],
 };
 
+/** The fact a summary tile should lead with. */
+export function headlineFact(res) {
+  return order(res)[0] || null;
+}
+
 function order(res) {
   const priority = HEADLINE[res.id] || [];
   const rank = f => {
@@ -46,7 +51,54 @@ function sentence(f) {
 
 const sentenceCase = s => s.charAt(0).toUpperCase() + s.slice(1);
 
-export function narrate(res, place) {
+const listOf = items => items.length > 1
+  ? `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`
+  : items[0];
+
+// Labels are written for a table, so they start capitalised. Mid-sentence they
+// should not — unless the label opens with an acronym or a proper noun ("5G
+// outdoors", "TfL station"), which the second character gives away.
+const midSentence = label =>
+  /^[A-Z][a-z]/.test(label) ? label.charAt(0).toLowerCase() + label.slice(1) : label;
+
+// Three sentences that all end "...above the UK average" is three times the
+// words for one idea. Facts landing in the same band against the same
+// benchmark collapse into one sentence — each keeping its own figure, so
+// nothing in the prose stops being checkable against the table.
+function merge(facts) {
+  const out = [];
+  let i = 0;
+  while (i < facts.length) {
+    const f = facts[i];
+    const c = f.comparison;
+    const group = [f];
+    if (c?.band) {
+      while (i + 1 < facts.length) {
+        const next = facts[i + 1].comparison;
+        if (!next || next.band !== c.band || next.vs !== c.vs) break;
+        group.push(facts[++i]);
+      }
+    }
+    i++;
+
+    if (group.length === 1) {
+      out.push(sentence(f));
+      continue;
+    }
+    const parts = listOf(group.map(g => `${midSentence(g.shortLabel || g.label)} (${g.display})`));
+    const quantifier = group.length === 2 ? 'both' : 'all';
+    out.push(c.vs
+      ? `${parts} are ${quantifier} ${c.band} the ${c.vsName || c.vs}.`
+      : `${parts} are ${quantifier} ${c.band}.`);
+  }
+  return out;
+}
+
+/**
+ * @param {object} opts.skipNotes  caveats are rendered separately by the card,
+ *   so the opening paragraph stays about the figures
+ */
+export function narrate(res, place, opts = {}) {
   void place;
   if (res.status === STATUS.OUT_OF_COVERAGE) {
     return res.notes.join(' ');
@@ -60,7 +112,8 @@ export function narrate(res, place) {
   const facts = order(res).slice(0, 3);
   if (!facts.length) return 'No figures available for this postcode.';
 
-  const lines = facts.map(f => sentenceCase(sentence(f)));
+  const lines = merge(facts).map(sentenceCase);
+  if (opts.skipNotes) return lines.join(' ');
 
   const extras = [];
   if (res.status === STATUS.PARTIAL) {

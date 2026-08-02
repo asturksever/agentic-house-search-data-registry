@@ -93,6 +93,18 @@ def build_readme(sources: list[dict]) -> str:
     text = README.read_text()
     start = text.index(SECTION_START)
     end = text.index(SECTION_END, start)
+
+    # Everything between the two markers is regenerated, so hand-written prose
+    # must not be filed there. Catch it here rather than silently deleting it.
+    replaced = text[start + len(SECTION_START):end]
+    strays = [line for line in replaced.splitlines()
+              if line.startswith("## ") and line.strip() != SECTION_START]
+    if strays:
+        raise SystemExit(
+            f"README: hand-written section(s) {strays} sit inside the generated block "
+            f"({SECTION_START!r} → {SECTION_END!r}) and would be overwritten. Move them "
+            "above the datasets tables or below Usage.")
+
     return text[:start] + build_readme_section(sources) + "\n" + text[end:]
 
 

@@ -10,6 +10,7 @@ const VIEWER = { label: 'Defra strategic noise map viewer', url: 'https://enviro
 export default {
   id: 'noise',
   label: 'Noise',
+  short: 'Noise',
   registryIds: [SOURCE],
 
   coverage(place) {

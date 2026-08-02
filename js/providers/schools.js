@@ -15,6 +15,7 @@ const RADIUS_M = 2000;
 export default {
   id: 'schools',
   label: 'Schools',
+  short: 'Schools',
   registryIds: [GIAS, OFSTED],
 
   coverage(place) {

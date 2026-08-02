@@ -50,6 +50,7 @@ async function ukhpi(region) {
 export default {
   id: 'prices',
   label: 'Property prices',
+  short: 'Prices',
   registryIds: [SOURCE],
 
   coverage(place) {
