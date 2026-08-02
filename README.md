@@ -257,6 +257,12 @@ curl -s https://raw.githubusercontent.com/asturksever/agentic-house-search-data-
   | jq '.sources[] | select(.category=="Planning & constraints") | {dataset, api}'
 ```
 
+Local development (both pages fetch `data/registry.json`, which `file://` blocks):
+
+```bash
+python3 -m http.server 8000   # then http://localhost:8000/report.html?postcode=SW111AA
+```
+
 ## Caveats
 
 Endpoints were verified against publisher documentation as of 2 August 2026. Government APIs move; treat `api` as a starting point and check `api_docs` before depending on it. Some entries require a free API key (Ofcom, BODS, EPC, OS Data Hub, CQC, Companies House, Land Registry CCOD). One entry — live for-sale listings — is explicitly **not** open data and is included so builders know where the wall is.

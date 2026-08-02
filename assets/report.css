@@ -13,6 +13,8 @@
 .anchors{position:sticky;top:0;z-index:2;background:var(--bg);padding:8px 0;margin:0 0 12px;
   display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
 
+/* The anchor row is sticky, so a jumped-to card must clear it. */
+.cat{scroll-margin-top:64px}
 .cat h2{font-size:17px;margin:0}
 .cat .head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin:0 0 8px}
 .narr{margin:0 0 12px}
@@ -53,6 +55,9 @@ table.facts .note{display:block;color:var(--muted);font-size:12.5px;margin-top:2
 @media (max-width:520px){
   body{padding:20px 14px 60px}
   .searchrow input{max-width:none}
+  /* Eleven wrapped pills eat half the screen; scroll them sideways instead. */
+  .anchors{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .anchors .pill{white-space:nowrap}
   table.facts td.bench{display:none}
   table.facts th:nth-child(3){display:none}
 }

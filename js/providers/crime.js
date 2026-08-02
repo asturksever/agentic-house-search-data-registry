@@ -101,6 +101,15 @@ export default {
     }
 
     res.notes.push(`Police data runs about two months behind, so the most recent month available is ${monthName(latest)}.`);
+
+    // data.police.uk only has what each force submits, and some forces have
+    // stopped supplying street-level data for months at a time. A near-empty
+    // result in a built-up area is far more likely to be a gap than a quiet
+    // street, and saying so is better than letting the number stand alone.
+    if (crimes.length < 5) {
+      res.notes.push(`Only ${crimes.length} crime${crimes.length === 1 ? '' : 's'} came back for three months, which is low enough to be worth double-checking: data.police.uk depends on each force submitting its data, and some have gaps lasting months.`);
+    }
+
     return finish(res);
   },
 };

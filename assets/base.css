@@ -28,6 +28,7 @@ input:focus{border-color:var(--accent)}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
 .filters button,.pill{border:1px solid var(--line);background:var(--card);color:var(--muted);padding:6px 12px;border-radius:999px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block}
 .filters button.active,.pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+select{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font-size:14px}
 .btn{border:1px solid var(--accent);background:var(--accent);color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;cursor:pointer}
 .btn.ghost{background:var(--card);color:var(--accent)}
 .btn:disabled{opacity:.5;cursor:default}
