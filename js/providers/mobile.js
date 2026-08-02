@@ -1,11 +1,22 @@
-// Mobile and 5G — Ofcom Connected Nations predicted coverage, per postcode.
+// Mobile and 5G — Ofcom Connected Nations.
+//
+// Ofcom publishes fixed broadband down to the postcode but mobile coverage only
+// at local-authority and constituency level, so this card describes the whole
+// local authority and says so rather than implying doorstep precision.
 
 import { fact, result, finish, fmt } from '../facts.js';
-import { loadPack, notBuilt } from './_pack.js';
+import { loadRaw, notBuilt } from './_pack.js';
 import { noteFailure } from './_util.js';
 
 const SOURCE = 'ofcom-broadband';
 const CHECKER = { label: 'Check this postcode on the Ofcom mobile checker', url: 'https://checker.ofcom.org.uk/' };
+
+const MEASURES = [
+  ['g5_out_all', 'mobile.5g_outdoor_all_pct', 'Premises with outdoor 5G from all four operators'],
+  ['g5_out_any', 'mobile.5g_outdoor_any_pct', 'Premises with outdoor 5G from at least one operator'],
+  ['g4_in_all', 'mobile.4g_indoor_all_pct', 'Premises with indoor 4G from all four operators'],
+  ['g4_in_any', 'mobile.4g_indoor_any_pct', 'Premises with indoor 4G from at least one operator'],
+];
 
 export default {
   id: 'mobile',
@@ -17,40 +28,34 @@ export default {
 
     let pack;
     try {
-      pack = await loadPack('mobile', place.area);
+      pack = await loadRaw('mobile', 'all');
     } catch (err) {
       noteFailure(res, SOURCE, 'mobile coverage extract', err);
       return finish(res);
     }
     if (!pack) return finish(notBuilt(res, 'Ofcom mobile coverage', CHECKER));
 
-    const row = pack.get(place.compact);
+    const row = pack.areas?.[place.district.code];
     if (!row) {
-      res.notes.push('This postcode is not in the Ofcom mobile coverage file.');
+      res.notes.push(`Ofcom's mobile file does not include ${place.district.name}.`);
       res.alt = CHECKER;
       return finish(res);
     }
 
-    const geography = { level: 'Postcode', code: place.compact, name: place.postcode };
-    const period = pack.generated ? `Ofcom extract, ${pack.generated}` : 'Ofcom Connected Nations';
-    const note = pack.exact(place.compact) ? null
-      : 'Not listed individually in the extract; showing the typical value for this postcode area.';
+    const fields = pack._fields || [];
+    const geography = { level: 'Local authority', code: place.district.code, name: place.district.name };
+    const period = pack._generated ? `Ofcom extract, ${pack._generated}` : 'Ofcom Connected Nations';
 
-    const operators = (key, label, value, extra) => {
-      if (typeof value !== 'number') return;
+    for (const [field, key, label] of MEASURES) {
+      const value = row[fields.indexOf(field)];
+      if (typeof value !== 'number') continue;
       res.facts.push(fact({
-        key, label, value, display: `${value} of 4`, kind: 'count', geography, period,
-        sourceId: SOURCE, note: extra || note,
+        key, label, value, display: fmt.pct(value), kind: 'percent', unit: '%',
+        geography, period, sourceId: SOURCE,
       }));
-    };
+    }
 
-    operators('mobile.5g_outdoor_operators', 'Operators with 5G outdoors', row.g5_out);
-    operators('mobile.5g_indoor_operators', 'Operators with 5G indoors', row.g5_in);
-    operators('mobile.4g_outdoor_operators', 'Operators with 4G outdoors', row.g4_out);
-    operators('mobile.4g_indoor_operators', 'Operators with 4G indoors', row.g4_in,
-      'Indoor coverage is modelled, and thick walls beat the model.');
-
-    res.notes.push('Ofcom coverage is predicted from operator network models rather than measured at the door, so treat it as a strong indication rather than a guarantee.');
+    res.notes.push(`These figures cover the whole of ${place.district.name}, not this street: Ofcom only publishes mobile coverage at local-authority level. They are also predicted from operator network models rather than measured at the door, and thick walls beat the model.`);
     return finish(res);
   },
 };

@@ -1,0 +1,52 @@
+{
+  "_comment": [
+    "Where each bulk source lives, and how to find it again when the URL moves.",
+    "Publishers rotate these paths every release, so each entry carries a",
+    "discovery page and a link pattern: if `url` 404s, the builder scrapes the",
+    "page, takes the first matching link, and logs a RELOCATED warning. If that",
+    "fails too, the pack is skipped and the committed shards are left alone —",
+    "a rotted URL must never take the live site down with it."
+  ],
+
+  "ofcom_fixed_postcodes": {
+    "title": "Ofcom Connected Nations — fixed broadband coverage by postcode",
+    "url": "https://www.ofcom.org.uk/siteassets/resources/documents/research-and-data/multi-sector/infrastructure-research/connected-nations-2024/data-downloads/202407-fixed-coverage-postcodes-r01.zip",
+    "discovery": {
+      "page": "https://www.ofcom.org.uk/phones-and-broadband/coverage-and-speeds/connected-nations-2024/data-downloads-2024",
+      "link_regex": "href=\"([^\"]*fixed-coverage-postcodes[^\"]*\\.zip[^\"]*)\""
+    },
+    "expect": { "min_rows": 1000000, "required_columns": ["postcode"] },
+    "licence": "Ofcom open data terms / OGL v3 — attribution required"
+  },
+
+  "ofcom_mobile_laua": {
+    "title": "Ofcom Connected Nations — mobile coverage by local authority",
+    "url": "https://www.ofcom.org.uk/siteassets/resources/documents/research-and-data/multi-sector/infrastructure-research/connected-nations-2024/data-downloads/202409-mobile-coverage_uk-nations-laua-pcon-r01.zip",
+    "discovery": {
+      "page": "https://www.ofcom.org.uk/phones-and-broadband/coverage-and-speeds/connected-nations-2024/data-downloads-2024",
+      "link_regex": "href=\"([^\"]*mobile-coverage[^\"]*\\.zip[^\"]*)\""
+    },
+    "expect": { "min_rows": 300, "required_columns": [] },
+    "licence": "Ofcom open data terms / OGL v3 — attribution required",
+    "note": "Ofcom publishes postcode-level coverage for fixed broadband but only local-authority and constituency level for mobile, so the mobile pack is keyed by local authority."
+  },
+
+  "gias_schools": {
+    "title": "Get Information about Schools — full register (daily extract)",
+    "url": "https://ea-edubase-api-prod.azurewebsites.net/edubase/edubasealldata{today}.csv",
+    "expect": { "min_rows": 20000, "required_columns": ["EstablishmentName", "Postcode"] },
+    "licence": "Open Government Licence v3"
+  },
+
+  "defra_noise": {
+    "title": "Defra strategic noise mapping, Round 4 (2022)",
+    "url": null,
+    "discovery": {
+      "page": "https://environment.data.gov.uk/dataset/562c9d56-7c2d-4d42-83bb-578d6e97a517",
+      "link_regex": "href=\"([^\"]*\\.(?:zip|gpkg))\""
+    },
+    "expect": { "min_rows": 1, "required_columns": [] },
+    "licence": "Open Government Licence v3",
+    "note": "Polygon contours. The builder needs geopandas and is the one pack that cannot be produced from a flat file — see tools/packbuild/README.md."
+  }
+}

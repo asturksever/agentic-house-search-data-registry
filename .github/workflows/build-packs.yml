@@ -1,0 +1,92 @@
+name: build-packs
+
+# The pre-built extracts the postcode report reads. Ofcom publishes roughly
+# twice a year and GIAS daily, so quarterly is generous; the manual trigger is
+# there for when a source moves.
+on:
+  schedule:
+    - cron: "0 4 1 */3 *"
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Which packs to build (comma-separated, or 'all')"
+        default: "all"
+      allow_large_change:
+        description: "Accept a pack whose postcode count moved more than 5%"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: build-packs
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Restore source downloads
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: packbuild-${{ hashFiles('tools/packbuild/sources.json') }}
+
+      - name: Build
+        id: build
+        run: |
+          PYTHONPATH=tools python3 -m packbuild build \
+            --only "${{ inputs.only || 'all' }}" \
+            ${{ inputs.allow_large_change && '--allow-large-change' || '' }} \
+            2>&1 | tee build.log
+
+      - name: Validate
+        run: PYTHONPATH=tools python3 -m packbuild validate
+
+      - name: Commit refreshed packs
+        run: |
+          if git diff --quiet -- packs; then
+            echo "packs unchanged"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packs
+          git commit -m "chore(packs): refresh from publisher sources"
+          git push
+
+      # A source that moves must not silently rot: the build leaves the
+      # committed shards alone and files an issue naming what it could not get.
+      - name: Report skipped sources
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let log = '';
+            try { log = fs.readFileSync('build.log', 'utf8'); } catch { return; }
+            const skipped = log.split('\n').filter(l => l.includes('SKIPPED') || l.includes('RELOCATED'));
+            if (!skipped.length) return;
+            const title = 'packbuild: a source moved or could not be downloaded';
+            const body = ['The scheduled pack build reported:', '', '```', ...skipped, '```', '',
+              'The previously committed shards are untouched, so the site is unaffected.',
+              'Update `tools/packbuild/sources.json` with the new URL.'].join('\n');
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open', labels: 'packbuild',
+            });
+            if (existing.data.length) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: existing.data[0].number, body });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title, body, labels: ['packbuild'] });
+            }

@@ -83,6 +83,14 @@ export function outOfCoverage(id, label, why, alt) {
  */
 export function finish(res) {
   if (res.status === STATUS.OUT_OF_COVERAGE) return res;
+
+  // Attribute only the sources that actually produced a fact, so a card never
+  // carries a licence line for data it did not use.
+  if (res.facts.length) {
+    const used = new Set(res.facts.map(f => f.sourceId));
+    res.sources = res.sources.filter(id => used.has(id));
+  }
+
   if (!res.facts.length) {
     res.status = res.errors.length ? STATUS.ERROR : STATUS.UNAVAILABLE;
   } else if (res.errors.length) {

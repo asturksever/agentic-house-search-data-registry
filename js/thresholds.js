@@ -35,18 +35,31 @@ export const THRESHOLDS = {
   'prices.avg_price_district': { direction: 'neutral', baseline: 'england',
     ratioBands: [[0, .75, 'well below'], [.75, .92, 'below'], [.92, 1.08, 'in line with'],
                  [1.08, 1.35, 'above'], [1.35, Infinity, 'well above']] },
+  // Coverage percentages saturate at 100, so a ratio against the UK mean is
+  // more informative than a ratio against the median (which is usually 100).
   'broadband.gigabit_pct': {
     direction: 'higher_is_better', baseline: 'uk',
+    ratioBands: [[0, .5, 'far below'], [.5, .9, 'below'], [.9, 1.05, 'in line with'],
+                 [1.05, Infinity, 'above']],
     absBands: [[0, 1, 'no gigabit service'], [1, 50, 'patchy'], [50, 95, 'mostly available'],
                [95, 101, 'available across the postcode']],
   },
-  'broadband.fttp_pct': { direction: 'higher_is_better', baseline: 'uk',
+  'broadband.ufbb_pct': { direction: 'higher_is_better', baseline: 'uk',
+    ratioBands: [[0, .5, 'far below'], [.5, .9, 'below'], [.9, 1.05, 'in line with'],
+                 [1.05, Infinity, 'above']],
     absBands: [[0, 1, 'not available'], [1, 50, 'patchy'], [50, 95, 'mostly available'],
                [95, 101, 'available across the postcode']] },
-  'mobile.5g_outdoor_operators': {
+  'broadband.sfbb_pct': { direction: 'higher_is_better', baseline: 'uk',
+    ratioBands: [[0, .5, 'far below'], [.5, .9, 'below'], [.9, 1.05, 'in line with'],
+                 [1.05, Infinity, 'above']] },
+  'mobile.5g_outdoor_all_pct': {
     direction: 'higher_is_better', baseline: null,
-    absBands: [[0, 1, 'no 5G outdoors'], [1, 2, 'one operator'], [2, 4, 'some operators'],
-               [4, 5, 'all four operators']],
+    absBands: [[0, 5, 'almost nowhere'], [5, 40, 'patchy'], [40, 80, 'widespread'],
+               [80, 101, 'nearly everywhere']],
+  },
+  'mobile.4g_indoor_all_pct': {
+    direction: 'higher_is_better', baseline: null,
+    absBands: [[0, 40, 'patchy'], [40, 80, 'widespread'], [80, 101, 'nearly everywhere']],
   },
   'noise.road_lden': {
     direction: 'lower_is_better', baseline: null,

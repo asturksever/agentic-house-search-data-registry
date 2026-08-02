@@ -16,6 +16,10 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 PROVIDERS = ROOT / "js" / "providers"
 IDS_RE = re.compile(r"registryIds\s*:\s*\[([^\]]*)\]", re.S)
 STRING_RE = re.compile(r"['\"]([^'\"]+)['\"]")
+# Providers name their sources through a module constant
+# (`const SOURCE = 'ofcom-broadband'`), so resolve those before checking.
+CONST_RE = re.compile(r"^const\s+([A-Za-z_$][\w$]*)\s*=\s*['\"]([^'\"]+)['\"]", re.M)
+IDENT_RE = re.compile(r"[A-Za-z_$][\w$]*")
 
 
 def main() -> int:
@@ -26,8 +30,17 @@ def main() -> int:
 
     errors, checked = [], 0
     for path in sorted(PROVIDERS.glob("*.js")):
-        for block in IDS_RE.findall(path.read_text()):
-            for sid in STRING_RE.findall(block):
+        text = path.read_text()
+        consts = dict(CONST_RE.findall(text))
+        for block in IDS_RE.findall(text):
+            ids = STRING_RE.findall(block)
+            ids += [consts[name] for name in IDENT_RE.findall(STRING_RE.sub("", block))
+                    if name in consts]
+            unresolved = [name for name in IDENT_RE.findall(STRING_RE.sub("", block))
+                          if name not in consts]
+            for name in unresolved:
+                errors.append(f"{path.relative_to(ROOT)}: cannot resolve {name} to a registry id")
+            for sid in ids:
                 checked += 1
                 if sid not in known:
                     errors.append(f"{path.relative_to(ROOT)}: unknown registry id {sid!r}")

@@ -23,3 +23,11 @@ jobs:
 
       - name: Provider registry ids resolve
         run: python3 tools/check_provider_ids.py
+
+      - name: Pack build tests
+        run: |
+          pip install --quiet pytest
+          PYTHONPATH=tools python3 -m pytest tools/packbuild/tests -q
+
+      - name: Committed packs are valid
+        run: PYTHONPATH=tools python3 -m packbuild validate

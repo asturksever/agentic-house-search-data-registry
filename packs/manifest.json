@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "generated": "2026-08-02",
+  "packs": {
+    "mobile": {
+      "generated": "2026-08-02",
+      "shards": "none",
+      "files": 1,
+      "bytes": 19335
+    },
+    "broadband": {
+      "generated": "2026-08-02",
+      "fields": [
+        "gigabit",
+        "ufbb",
+        "sfbb",
+        "uso"
+      ],
+      "shards": "postcode-area",
+      "files": 121,
+      "postcodes": 1594643,
+      "bytes": 11308637
+    },
+    "schools": {
+      "generated": "2026-08-02",
+      "shards": "postcode-area",
+      "files": 114,
+      "schools": 26535,
+      "bytes": 2837861
+    }
+  },
+  "sources": {
+    "mobile": {
+      "url": "https://www.ofcom.org.uk/siteassets/resources/documents/research-and-data/multi-sector/infrastructure-research/connected-nations-2024/data-downloads/202409-mobile-coverage_uk-nations-laua-pcon-r01.zip",
+      "sha256": "f9cac755b2f1bc5aca551a14d92db0b594bac6b671ff27047b2ce7d56e1d6086",
+      "bytes": 252111,
+      "fetched": "2026-08-02",
+      "relocated": false
+    },
+    "broadband": {
+      "url": "https://www.ofcom.org.uk/siteassets/resources/documents/research-and-data/multi-sector/infrastructure-research/connected-nations-2024/data-downloads/202407-fixed-coverage-postcodes-r01.zip",
+      "sha256": "6afe1acc5e6610a4d16c54cbcb0c6e1973d9b41a1ccc6584d3b5d9de33ce342f",
+      "bytes": 34250923,
+      "fetched": "2026-08-02",
+      "relocated": false
+    },
+    "schools": {
+      "url": "https://ea-edubase-api-prod.azurewebsites.net/edubase/edubasealldata20260802.csv",
+      "sha256": "e51cd523bd499bfb746ebf7d1812f5096b8a4d1fa8185c797a5deceee549fe17",
+      "bytes": 64542624,
+      "fetched": "2026-08-02",
+      "relocated": false
+    }
+  }
+}

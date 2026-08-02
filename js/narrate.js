@@ -12,8 +12,8 @@ const HEADLINE = {
   crime: ['crime.total_3m'],
   deprivation: ['deprivation.imd_decile', 'deprivation.imd_rank'],
   prices: ['prices.avg_price_district', 'prices.annual_change', 'prices.median_paid'],
-  broadband: ['broadband.gigabit_pct', 'broadband.fttp_pct', 'broadband.max_download'],
-  mobile: ['mobile.5g_outdoor_operators', 'mobile.4g_indoor_operators'],
+  broadband: ['broadband.gigabit_pct', 'broadband.ufbb_pct', 'broadband.sfbb_pct'],
+  mobile: ['mobile.5g_outdoor_all_pct', 'mobile.5g_outdoor_any_pct', 'mobile.4g_indoor_all_pct'],
   noise: ['noise.road_lden', 'noise.rail_lden', 'noise.air_lden'],
   transport: ['transport.nearest_station_m', 'transport.tfl_nearest', 'transport.bus_stops_800m'],
   amenities: ['amenities.nearest_supermarket_m', 'amenities.nearest_park_m', 'amenities.nearest_gp_m'],
@@ -40,13 +40,7 @@ function sentence(f) {
     const bench = f.benchmarks.find(b => b.scope === c.vs);
     return `${f.label} is ${f.display}, ${c.band} the ${c.vsName || c.vs} figure of ${benchDisplay(bench)}.`;
   }
-  if (c && c.band) {
-    // Bands written as full clauses ("among the most deprived areas in England")
-    // read as a continuation; single words read as an apposition.
-    return c.band.includes(' ')
-      ? `${f.label} is ${f.display} — ${c.band}.`
-      : `${f.label} is ${f.display}, which is ${c.band} for this kind of area.`;
-  }
+  if (c && c.band) return `${f.label} is ${f.display} — ${c.band}.`;
   return `${f.label}: ${f.display}.`;
 }
 
