@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Postcode report — Agentic House Search Data Registry</title>
+<!-- Every host this page is allowed to talk to, enumerated. api.anthropic.com is
+     reached only when the visitor supplies their own key for the AI summary. -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'none';
+  script-src 'self';
+  style-src 'self';
+  img-src 'self' data:;
+  connect-src 'self'
+    https://api.postcodes.io
+    https://data.police.uk
+    https://www.nomisweb.co.uk
+    https://landregistry.data.gov.uk
+    https://www.planning.data.gov.uk
+    https://environment.data.gov.uk
+    https://api.tfl.gov.uk
+    https://overpass-api.de
+    https://api.anthropic.com;
+  base-uri 'self';
+  form-action 'none';">
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/report.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>Postcode report</h1>
+  <nav class="nav">
+    <a href="index.html">Data registry</a>
+    <a href="report.html" class="here">Postcode report</a>
+  </nav>
+  <p class="sub">What the datasets in this registry actually say about one postcode. Everything below is fetched live from the publishers' own APIs in your browser, or read from the pre-built extracts in this repo — there is no server in between.</p>
+
+  <form class="searchrow" id="form">
+    <input id="pc" type="text" inputmode="text" autocapitalize="characters" autocomplete="postal-code"
+           spellcheck="false" placeholder="e.g. SW11 1AA" aria-label="UK postcode">
+    <button class="btn" type="submit">Get report</button>
+    <button class="btn ghost" type="button" id="copylink" hidden>Copy link</button>
+  </form>
+  <p class="hint" id="hint">Try <a data-eg="SW1A 1AA">SW1A 1AA</a>, <a data-eg="M1 1AE">M1 1AE</a> or <a data-eg="LA23 1AA">LA23 1AA</a>.</p>
+
+  <div id="place"></div>
+  <div class="anchors" id="anchors" hidden></div>
+  <p class="progress" id="progress" role="status" aria-live="polite"></p>
+  <div id="ai"></div>
+  <div id="cards"></div>
+
+  <footer>
+    <p><strong>This is not a survey, a valuation, or a conveyancing search.</strong> It is a demonstration of what the open datasets in this registry can tell you, assembled automatically. Check anything that would change your decision against the source.</p>
+    <p>Contains public sector information licensed under the Open Government Licence v3.0. Postcode geography contains OS data © Crown copyright and database right, Royal Mail data © Royal Mail copyright and database right, and National Statistics data © Crown copyright and database right. Crime data © Home Office and the relevant police force. Price data © HM Land Registry. Transport data powered by TfL Open Data. Amenity data © OpenStreetMap contributors, ODbL.</p>
+  </footer>
+</div>
+<script type="module" src="js/report.js"></script>
+</body>
+</html>
