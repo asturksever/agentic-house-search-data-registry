@@ -91,7 +91,7 @@ function factRow(f, hideScope) {
 
 function sourceLines(res) {
   return res.sources.map(id => {
-    const s = registry.byId[id];
+    const s = registry?.byId?.[id];
     if (!s) return '';
     return `<p class="srcline">${esc(s.publisher)} · ${esc(s.licence)} · updated ${esc(s.update_frequency)}
       · <a href="${esc(registryAnchor(id))}">registry entry ↗</a></p>`;
@@ -207,9 +207,18 @@ function showPostcodeError(err) {
 
 /* ------------------------------------------------------------------ the run */
 
+// Attribution comes from the registry, but the numbers do not — so a failed
+// registry load degrades the licence lines rather than the whole report, and
+// is retried on each search in case it was a blip.
+async function ensureRegistry() {
+  if (!registry) registry = await loadRegistry().catch(() => null);
+  return registry;
+}
+
 async function run(input) {
   const runId = ++currentRun;
   el.hint.textContent = 'Looking up postcode…';
+  await ensureRegistry();
 
   let place;
   try {
@@ -289,16 +298,17 @@ el.copylink.addEventListener('click', async () => {
   } catch { /* clipboard blocked — the URL bar already has it */ }
 });
 
-registry = await loadRegistry().catch(err => {
-  el.hint.innerHTML = `<span class="err">Could not load the registry: ${esc(err.message)}.</span>
-    This page needs to be served over HTTP — try <code>python3 -m http.server 8000</code>.`;
-  return null;
-});
+await ensureRegistry();
+if (!registry) {
+  // Worth saying, but not worth blocking on: the report still runs, it just
+  // cannot print each card's publisher and licence.
+  el.hint.innerHTML = `<span class="err">Could not load <code>data/registry.json</code>,
+    so source and licence lines will be missing.</span> If you opened this file directly,
+    serve the folder over HTTP instead — <code>python3 -m http.server 8000</code>.`;
+}
 
-if (registry) {
-  const fromUrl = new URLSearchParams(location.search).get('postcode');
-  if (fromUrl && normalise(fromUrl)) {
-    el.pc.value = pretty(normalise(fromUrl));
-    run(fromUrl);
-  }
+const fromUrl = new URLSearchParams(location.search).get('postcode');
+if (fromUrl && normalise(fromUrl)) {
+  el.pc.value = pretty(normalise(fromUrl));
+  run(fromUrl);
 }
