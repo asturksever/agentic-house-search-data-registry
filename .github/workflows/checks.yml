@@ -1,0 +1,25 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  registry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate registry.json
+        run: python3 tools/validate_registry.py
+
+      - name: Derived files are up to date
+        run: python3 tools/gen_derived.py --check
+
+      - name: Provider registry ids resolve
+        run: python3 tools/check_provider_ids.py

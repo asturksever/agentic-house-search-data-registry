@@ -15,8 +15,14 @@ UK property intelligence sites (CrystalRoof, PropertyData, and others) are large
 | File | Description |
 | --- | --- |
 | [`data/registry.json`](data/registry.json) | Canonical machine-readable registry |
-| [`data/registry.csv`](data/registry.csv) | Flat table for spreadsheets |
-| [`index.html`](index.html) | Self-contained searchable browser (no build step) |
+| [`data/registry.csv`](data/registry.csv) | Flat table for spreadsheets (generated) |
+| [`index.html`](index.html) | Searchable catalogue of every entry |
+| [`report.html`](report.html) | Postcode report — pulls live values out of these sources for one postcode |
+| [`tools/`](tools) | `gen_derived.py` (regenerates the CSV and the README tables), `validate_registry.py`, `check_provider_ids.py` |
+
+Both pages fetch `data/registry.json` at runtime, so they need to be served over
+HTTP rather than opened from disk: `python3 -m http.server 8000`, then
+<http://localhost:8000/>.
 
 ## Schema
 
