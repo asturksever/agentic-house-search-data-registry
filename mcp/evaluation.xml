@@ -1,0 +1,64 @@
+<!--
+  Evaluation set for uk-postcode-mcp-server.
+
+  Every answer below was produced by calling the server's own tools and is
+  stable: it comes from fixed geography, a dated statistical release (IMD 2019,
+  SIMD 2020, NIMDM 2017), the committed pack extracts, or the registry itself —
+  never from a live figure like a crime count or a house price, which move every
+  month and would make the suite fail for the wrong reason.
+
+  Several questions deliberately probe coverage and comparability, because a
+  server that silently returns nothing for Scotland is worse than one that says
+  why.
+-->
+<evaluation>
+  <qa_pair>
+    <question>Using the UK postcode tools, find the Lower Layer Super Output Area code for the postcode SW11 1AA. Give the code exactly as published.</question>
+    <answer>E01004588</answer>
+  </qa_pair>
+
+  <qa_pair>
+    <question>The postcode LA23 1AA sits inside a national park. Which one?</question>
+    <answer>Lake District</answer>
+  </qa_pair>
+
+  <qa_pair>
+    <question>Which police force area covers the postcode M1 1AE?</question>
+    <answer>Greater Manchester</answer>
+  </qa_pair>
+
+  <qa_pair>
+    <question>Deprivation ranks are not comparable between UK nations because each nation uses its own index over its own set of areas. For the postcode EH1 1YZ, how many areas is its deprivation rank measured against? Answer with the number only.</question>
+    <answer>6976</answer>
+  </qa_pair>
+
+  <qa_pair>
+    <question>For the Belfast postcode BT1 5GS, what is its deprivation decile, expressed as "N of 10"?</question>
+    <answer>2 of 10</answer>
+  </qa_pair>
+
+  <qa_pair>
+    <question>Ask for a schools report on the Cardiff postcode CF10 1EP. The tool does not return school data. What single-word status does it return for that category, indicating the dataset does not cover Wales rather than that the request failed?</question>
+    <answer>out_of_coverage</answer>
+  </qa_pair>
+
+  <qa_pair>
+    <question>In the registry of UK open datasets behind this server, how many datasets are in the "Ownership &amp; tenure" category? Answer with the number only.</question>
+    <answer>5</answer>
+  </qa_pair>
+
+  <qa_pair>
+    <question>Look up the registry entry for HM Land Registry Price Paid Data. Its licence is Open Government Licence v3 with one stated exception. Which fields does that exception apply to? Answer with the single word used in the licence text.</question>
+    <answer>address</answer>
+  </qa_pair>
+
+  <qa_pair>
+    <question>Compare SW11 1AA and LA23 1AA on mobile coverage. For the measure "premises with outdoor 5G from all four operators", what percentage does LA23 1AA report? Answer as a percentage including the percent sign.</question>
+    <answer>12%</answer>
+  </qa_pair>
+
+  <qa_pair>
+    <question>Request the noise category for SW11 1AA. The server cannot report a noise figure. Which dataset publisher's extract does it say has not been built yet? Answer with the publisher name as it appears in the message.</question>
+    <answer>Defra</answer>
+  </qa_pair>
+</evaluation>

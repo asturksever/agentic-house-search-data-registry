@@ -66,6 +66,26 @@ blocks):
 python3 -m http.server 8000   # then http://localhost:8000/report.html?postcode=SW111AA
 ```
 
+## MCP server
+
+[`mcp/`](mcp/README.md) exposes all of this to AI agents over the Model Context
+Protocol — five tools: a full postcode report, a fast geography lookup, a
+side-by-side comparison of up to five postcodes, and search/fetch over the
+registry itself.
+
+```json
+{
+  "mcpServers": {
+    "uk-postcode": { "command": "npx", "args": ["-y", "uk-postcode-mcp-server"] }
+  }
+}
+```
+
+It runs the **same** provider modules as `report.html` rather than a
+reimplementation, so a threshold, a coverage gate or a caveat is written once
+and both surfaces agree. stdio by default; `--http` for a streamable HTTP
+endpoint. See [`mcp/README.md`](mcp/README.md).
+
 ## Schema
 
 ```json

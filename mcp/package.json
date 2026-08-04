@@ -1,0 +1,41 @@
+{
+  "name": "uk-postcode-mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server for UK neighbourhood research: a full postcode report (demographics, crime, deprivation, prices, fibre, 5G, transport, amenities, schools, planning constraints) plus a searchable registry of the 45 open datasets behind it.",
+  "keywords": ["mcp", "modelcontextprotocol", "uk", "postcode", "property", "open-data", "neighbourhood"],
+  "license": "CC0-1.0",
+  "author": "asturksever",
+  "homepage": "https://github.com/asturksever/agentic-house-search-data-registry#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asturksever/agentic-house-search-data-registry.git",
+    "directory": "mcp"
+  },
+  "bugs": "https://github.com/asturksever/agentic-house-search-data-registry/issues",
+  "type": "module",
+  "bin": {
+    "uk-postcode-mcp-server": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": ["dist", "README.md"],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc && node scripts/bundle-providers.mjs",
+    "prepublishOnly": "npm run build",
+    "start": "node dist/index.js",
+    "smoke": "node scripts/smoke.mjs",
+    "inspect": "npx @modelcontextprotocol/inspector node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "express": "^5.2.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}
