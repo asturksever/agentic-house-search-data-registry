@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * uk-postcode-mcp-server
+ * agentic-house-uk
  *
- *   uk-postcode-mcp-server              # stdio (default) — for Claude Desktop, Claude Code
- *   uk-postcode-mcp-server --http       # streamable HTTP on 127.0.0.1:8848
- *   uk-postcode-mcp-server --http --port 9000 --host 0.0.0.0
+ *   agentic-house-uk              # stdio (default) — for Claude Desktop, Claude Code
+ *   agentic-house-uk --http       # streamable HTTP on 127.0.0.1:8848
+ *   agentic-house-uk --http --port 9000 --host 0.0.0.0
  *
  * Environment:
  *   AHS_BASE_URL   site root to read data from (default: the published GitHub Pages site)

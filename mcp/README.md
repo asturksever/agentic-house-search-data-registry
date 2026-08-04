@@ -1,4 +1,4 @@
-# uk-postcode-mcp-server
+# agentic-house-uk
 
 An MCP server for UK neighbourhood research. Give it a postcode, get back what
 the government's own open data says about that place — demographics, crime,
@@ -18,9 +18,9 @@ Nothing to clone. Add it to your MCP client's config:
 ```json
 {
   "mcpServers": {
-    "uk-postcode": {
+    "agentic-house-uk": {
       "command": "npx",
-      "args": ["-y", "uk-postcode-mcp-server"]
+      "args": ["-y", "agentic-house-uk"]
     }
   }
 }
@@ -29,7 +29,7 @@ Nothing to clone. Add it to your MCP client's config:
 Or over HTTP, for a client that connects by URL:
 
 ```bash
-npx -y uk-postcode-mcp-server --http --port 8848
+npx -y agentic-house-uk --http --port 8848
 # POST http://127.0.0.1:8848/mcp   ·   GET /health
 ```
 

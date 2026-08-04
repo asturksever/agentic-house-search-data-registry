@@ -1,4 +1,4 @@
-export const SERVER_NAME = 'uk-postcode-mcp-server';
+export const SERVER_NAME = 'agentic-house-uk';
 export const SERVER_VERSION = '0.1.0';
 
 /**

@@ -76,7 +76,7 @@ registry itself.
 ```json
 {
   "mcpServers": {
-    "uk-postcode": { "command": "npx", "args": ["-y", "uk-postcode-mcp-server"] }
+    "agentic-house-uk": { "command": "npx", "args": ["-y", "agentic-house-uk"] }
   }
 }
 ```
