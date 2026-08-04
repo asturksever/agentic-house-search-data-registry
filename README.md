@@ -76,7 +76,7 @@ registry itself.
 ```json
 {
   "mcpServers": {
-    "agentic-house-uk": { "command": "npx", "args": ["-y", "agentic-house-uk"] }
+    "agentic-house-search": { "command": "npx", "args": ["-y", "agentic-house-search"] }
   }
 }
 ```

@@ -129,7 +129,7 @@ export function rateLimit(config: AccessConfig) {
         -32002,
         `Rate limit reached (${limit} requests per ${Math.round(config.windowMs / 60000)} minutes). ` +
           `Retry in ${retryAfter}s, or run the server yourself with ` +
-          '`npx agentic-house-uk` for unlimited local use.',
+          '`npx agentic-house-search` for unlimited local use.',
       );
       return;
     }
