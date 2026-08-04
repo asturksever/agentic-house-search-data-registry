@@ -17,15 +17,12 @@ export const TONES = ['good', 'neutral', 'watch', 'poor'];
 // ratioBands: over value / baseline.  absBands: over the raw value, used when
 //   no benchmark is available.
 export const THRESHOLDS = {
-  'crime.rate_per_1000': {
-    direction: 'lower_is_better', baseline: 'england',
-    ratioBands: [[0, .7, 'well below', 'good'], [.7, .9, 'below', 'good'],
-                 [.9, 1.1, 'in line with', 'neutral'], [1.1, 1.4, 'above', 'watch'],
-                 [1.4, Infinity, 'well above', 'poor']],
-    absBands: [[0, 40, 'notably low', 'good'], [40, 70, 'low', 'good'],
-               [70, 110, 'typical', 'neutral'], [110, 160, 'high', 'watch'],
-               [160, Infinity, 'very high', 'poor']],
-  },
+  // Crime is deliberately absent from this table. Recorded crime per 1 km square
+  // is extremely skewed (a sampled national median of ~16 against a mean of ~79),
+  // so banding it by ratio against an average would call an ordinary city street
+  // "forty times the national figure". js/providers/crime.js bands it by
+  // percentile against the sampled distribution in packs/baselines.json and
+  // supplies its own comparison.
   'deprivation.imd_decile': {
     direction: 'higher_is_better', baseline: null,
     // Nation-neutral wording: the fact names which index it came from, and the

@@ -41,11 +41,18 @@ function benchDisplay(b) {
 
 function sentence(f) {
   const c = f.comparison;
-  if (c && c.vs) {
+  if (c && c.vs && c.phrasing !== 'clause') {
     const bench = f.benchmarks.find(b => b.scope === c.vs);
     return `${f.label} is ${f.display}, ${c.band} the ${c.vsName || c.vs} figure of ${benchDisplay(bench)}.`;
   }
-  if (c && c.band) return `${f.label} is ${f.display} — ${c.band}.`;
+  if (c && c.band) {
+    // A band written as a complete clause reads as an apposition, with the
+    // benchmark parenthesised rather than threaded through the sentence.
+    const bench = c.vs && f.benchmarks.find(b => b.scope === c.vs);
+    return bench
+      ? `${f.label} is ${f.display} — ${c.band} (${c.vsName || c.vs}: ${benchDisplay(bench)}).`
+      : `${f.label} is ${f.display} — ${c.band}.`;
+  }
   return `${f.label}: ${f.display}.`;
 }
 

@@ -41,8 +41,34 @@ def _distribution(packs_dir: pathlib.Path, pack: str, field: str) -> dict | None
             "postcodes": len(values)}
 
 
-def build(packs_dir: pathlib.Path, generated: str, log=print) -> dict:
+def build(packs_dir: pathlib.Path, generated: str, log=print, *, with_crime: bool = True) -> dict:
     out: dict = {"generated": generated}
+
+    # Live-sampled, so it is opt-out for fast local rebuilds and for any run
+    # where police.uk is unreachable. Whenever a fresh sample is not produced the
+    # previous one is carried forward: a stale benchmark, clearly dated, is far
+    # better than silently removing the only thing that makes a crime count
+    # readable.
+    existing = packs_dir / "baselines.json"
+    previous_crime = None
+    if existing.exists():
+        try:
+            previous_crime = json.loads(existing.read_text()).get("crime")
+        except json.JSONDecodeError:
+            pass
+
+    if with_crime:
+        try:
+            from . import build_crime_baseline
+            out["crime"] = build_crime_baseline.build(packs_dir, log=log)
+        except Exception as err:  # noqa: BLE001 — any failure here is non-fatal
+            log(f"  crime baseline failed: {err}")
+            if previous_crime:
+                out["crime"] = previous_crime
+                log(f"  kept the previous crime baseline ({previous_crime.get('period')})")
+    elif previous_crime:
+        out["crime"] = previous_crime
+        log(f"  crime baseline: kept the existing one ({previous_crime.get('period')})")
 
     if (packs_dir / "broadband").is_dir():
         out["broadband"] = {

@@ -1,5 +1,5 @@
 export const SERVER_NAME = 'agentic-house-search';
-export const SERVER_VERSION = '0.1.0';
+export const SERVER_VERSION = '0.1.1';
 
 /**
  * Where the data comes from. The published site is the default so `npx` works

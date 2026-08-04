@@ -42,7 +42,8 @@ def load_manifest() -> dict:
     return {"version": 1, "generated": None, "packs": {}, "sources": {}}
 
 
-def build(names: list[str], *, refresh: bool, allow_large_change: bool, log=print) -> int:
+def build(names: list[str], *, refresh: bool, allow_large_change: bool,
+          crime_baseline: bool = True, log=print) -> int:
     import importlib
 
     PACKS.mkdir(exist_ok=True)
@@ -90,7 +91,7 @@ def build(names: list[str], *, refresh: bool, allow_large_change: bool, log=prin
 
     manifest["generated"] = generated
     (PACKS / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
-    baselines.build(PACKS, generated, log=log)
+    baselines.build(PACKS, generated, log=log, with_crime=crime_baseline)
 
     errors = validate.validate_all(PACKS)
     for e in errors:
@@ -115,6 +116,9 @@ def main(argv=None) -> int:
     b.add_argument("--refresh", action="store_true", help="ignore the download cache")
     b.add_argument("--allow-large-change", action="store_true",
                    help="accept a pack whose size moved more than 5%%")
+    b.add_argument("--skip-crime-baseline", action="store_true",
+                   help="do not re-sample the national crime baseline (it makes ~600 live "
+                        "API calls and takes several minutes); the previous one is kept")
 
     sub.add_parser("validate", help="check the packs already on disk")
 
@@ -131,7 +135,8 @@ def main(argv=None) -> int:
     if unknown:
         ap.error(f"unknown pack(s): {', '.join(unknown)}")
     return build(names, refresh=args.refresh,
-                 allow_large_change=args.allow_large_change)
+                 allow_large_change=args.allow_large_change,
+                 crime_baseline=not args.skip_crime_baseline)
 
 
 if __name__ == "__main__":

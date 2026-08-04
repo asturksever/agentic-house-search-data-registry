@@ -72,7 +72,7 @@ Agents summarising it should carry that through:
   per postcode.
 - **Coverage varies by UK nation, and is stated rather than hidden.** Census
   tables are England & Wales; `data.police.uk` excludes Scotland; the Planning
-  Data platform, Defra noise and Ofsted are England-only. Those categories come
+  Data platform, Defra noise and the DfE school register are England-only. Those categories come
   back as `out_of_coverage` with the reason and a link to the devolved
   equivalent — never as a zero or an empty result.
 - **Deprivation ranks are not comparable across nations.** England, Wales,

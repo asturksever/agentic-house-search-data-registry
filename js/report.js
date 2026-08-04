@@ -84,7 +84,7 @@ function factRow(f, hideScope) {
     <div class="flabel">${esc(f.label)}</div>
     <div class="fvalue${long ? ' long' : ''}">${esc(f.display)}</div>
     ${shared || f.note ? `<div class="fmeta">${esc([shared, f.note].filter(Boolean).join(' · '))}</div>` : ''}
-    ${c?.band ? `<div class="fband"><span class="pill t-${esc(c.tone)}">${glyph(c.tone)}${esc(c.band)}${c.vs ? ` ${esc(c.vsName || c.vs)}` : ''}</span></div>` : ''}
+    ${c?.band ? `<div class="fband"><span class="pill t-${esc(c.tone)}">${glyph(c.tone)}${esc(c.band)}${c.vs && c.phrasing !== 'clause' ? ` ${esc(c.vsName || c.vs)}` : ''}</span></div>` : ''}
     ${meterHTML}
   </div>`;
 }
@@ -162,7 +162,9 @@ function tileHTML(provider, res) {
   const off = !res.facts.length;
   const status = off
     ? { [STATUS.OUT_OF_COVERAGE]: 'not covered here', [STATUS.UNAVAILABLE]: 'no data yet' }[res.status] || 'no data'
-    : (c?.band ? `${c.band}${c.vs ? ` ${c.vsName || c.vs}` : ''}` : head?.label || '');
+    : (c?.band
+        ? `${c.band}${c.vs && c.phrasing !== 'clause' ? ` ${c.vsName || c.vs}` : ''}`
+        : head?.label || '');
   const figure = off ? '—' : head.display;
   return `<a class="tile ${off ? 't-off' : `t-${esc(tone || 'neutral')}`}" href="#cat-${esc(provider.id)}">
     <span class="cat-name">${esc(name)}</span>

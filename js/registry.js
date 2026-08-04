@@ -3,14 +3,16 @@
 // publisher/licence/cadence line is never written out by hand twice.
 
 import { resolve } from './config.js';
+import { getJSON } from './fetchx.js';
 
 let cached = null;
 
 export async function loadRegistry() {
   if (cached) return cached;
-  const res = await fetch(resolve('data/registry.json'));
-  if (!res.ok) throw new Error(`registry.json: HTTP ${res.status}`);
-  const data = await res.json();
+  // Through fetchx rather than bare fetch, so this gets the same deadline and
+  // retry as everything else: a hung registry fetch used to have no timeout at
+  // all, and it runs before the page can render anything.
+  const data = await getJSON(resolve('data/registry.json'));
   data.byId = Object.fromEntries(data.sources.map(s => [s.id, s]));
   cached = data;
   return cached;

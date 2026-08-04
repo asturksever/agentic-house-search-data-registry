@@ -2,7 +2,7 @@ import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import { getRegistry } from '../services/data.js';
-import { capText, toolError } from '../services/format.js';
+import { capJson, capText, toolError } from '../services/format.js';
 import type { RegistrySource } from '../types.js';
 import { ResponseFormat } from '../types.js';
 
@@ -163,7 +163,13 @@ Follow up with postcode_get_dataset for the full entry including API docs and th
 
       const text =
         response_format === ResponseFormat.JSON
-          ? JSON.stringify(structured, null, 2)
+          ? capJson(
+              structured,
+              'Use a smaller limit or a narrower query.',
+              current => (current.datasets.length > 1
+                ? { ...current, datasets: current.datasets.slice(0, -1) }
+                : null),
+            )
           : [
               `# ${matched.length} dataset${matched.length === 1 ? '' : 's'} matched (showing ${page.length})`,
               '',
@@ -182,7 +188,12 @@ Follow up with postcode_get_dataset for the full entry including API docs and th
 
       return {
         content: [
-          { type: 'text' as const, text: capText(text, 'Use a smaller limit or a narrower query.') },
+          {
+            type: 'text' as const,
+            text: response_format === ResponseFormat.JSON
+              ? text
+              : capText(text, 'Use a smaller limit or a narrower query.'),
+          },
         ],
         structuredContent: structured,
       };

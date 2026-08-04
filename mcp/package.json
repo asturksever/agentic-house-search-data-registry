@@ -1,9 +1,17 @@
 {
   "name": "agentic-house-search",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server for UK neighbourhood research: a full postcode report (demographics, crime, deprivation, prices, fibre, 5G, transport, amenities, schools, planning constraints) plus a searchable registry of the 45 open datasets behind it.",
-  "keywords": ["mcp", "modelcontextprotocol", "uk", "postcode", "property", "open-data", "neighbourhood"],
-  "license": "CC0-1.0",
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "uk",
+    "postcode",
+    "property",
+    "open-data",
+    "neighbourhood"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": "asturksever",
   "homepage": "https://github.com/asturksever/agentic-house-search-data-registry#readme",
   "repository": {
@@ -17,7 +25,12 @@
     "agentic-house-search": "dist/index.js"
   },
   "main": "dist/index.js",
-  "files": ["dist", "src", "README.md"],
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE.md"
+  ],
   "engines": {
     "node": ">=20"
   },

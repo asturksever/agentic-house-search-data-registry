@@ -83,6 +83,98 @@ None of the above is legal advice. It is the list of questions to put to a
 solicitor, and the reason the answer to "can I charge for this yet" is currently
 "not until these three are answered".
 
+## If and when a paid tier is built
+
+Designed, costed and deliberately not built. This section exists so the thinking
+does not have to be redone, and so nobody redraws the boundary by accident.
+
+### Tiers
+
+| Tier | Price | What it is |
+| --- | --- | --- |
+| **Self-hosted** | free, forever | The npm package. All five tools, all eleven categories, no key, no limits. Unchanged. |
+| **Hosted free** | £0, key required | The funnel and the abuse boundary, not a product. Low daily cap, single postcode, best effort. |
+| **Pro** | ~£29/mo | 10k requests/month, batch up to 100 postcodes, EPC, PDF output, webhooks, email support. |
+| **Team** | ~£149/mo | Higher limits, async batch, history and change alerts, white-label PDF (attribution footer stays), 99.5% SLA. |
+| **Embedded** | from ~£500/mo | A **support and updates subscription** plus a private pack mirror. Not a licence: the code is CC0 and selling permission already granted is a good way to lose a customer who reads `LICENSE.md`. |
+
+### What is actually being sold
+
+Compute, secrets held on your behalf, storage, uptime and attention. Never data
+redistribution. That is not a slogan, it is what keeps revenue possible while
+the licensing questions below are open, and it means each answer gates one
+feature rather than the whole product.
+
+| Feature | Exposed to the blockers? |
+| --- | --- |
+| Higher limits, SLA, support, webhooks | No. Sells compute and attention. |
+| EPC | No. Sells a key you hold and its rate budget. Its own terms still need reading. |
+| PDF output, attributed | Mostly no. Keep Ofcom categories out until blocker 1 clears. |
+| Batch and bulk | **Yes.** Bulk postcode processing is exactly the pattern the OS and Royal Mail conditions target. |
+| History and change alerts | **Yes.** A time series of Ofcom values is a derived database. |
+| A commercial-use licence, private pack mirror | **Fully.** You can only grant what you hold. Ship last, if ever. |
+
+Three mitigations make the exposed set survivable: return produced works
+(`Fact` objects with `display`, `band` and narrative) and **never raw pack rows
+or a bulk postcode table**; put a no-redistribution term in the contract; and
+stop leaning on the public postcodes.io instance for commercial traffic, either
+by building a geography pack from ONSPD or by taking an OS Data Hub plan.
+
+### Structure
+
+A **separate private repo depending on the public npm package**. The free
+package gains zero dependencies and never grows a commercial branch, which is
+the only version of "the free tier must not degrade" that is enforced by
+construction rather than by good intentions.
+
+That needs one small change here when the time comes: `createServer()` takes an
+options bag (`enabledTools`, `extraTools`, `instructionsSuffix`) and
+`package.json` gains an `exports` map, making this a library as well as a
+binary. Defaults must preserve today's behaviour exactly.
+
+### Smallest sellable increment
+
+> Hosted Pro, ~£29/mo: a warm, authenticated endpoint at 10,000 requests/month,
+> batch up to 100 postcodes, and email support. Keys issued by hand against a
+> Stripe Payment Link.
+
+No EPC, no history, no PDF, no billing automation. It sells compute and
+reliability exclusively, and every licensing blocker is either untouched or
+handled by output shape. Graduate from hand-issued keys at roughly ten
+customers, not before: building billing automation for three customers is how a
+solo product dies.
+
+### Before the first invoice
+
+1. Packs served from somewhere other than GitHub Pages, whose terms forbid
+   commercial use. `js/config.js` makes this an environment variable, not a
+   rewrite.
+2. The cache TTL work (done, see `js/fetchx.js`) proven over a multi-day soak
+   with flat memory.
+3. Auth that **fails closed**. See the defects below.
+4. Metering that survives a restart. Test it by killing the process mid-month.
+5. A written position on bulk postcode processing.
+6. Terms of service with no-redistribution and no-warranty-on-upstream-data
+   clauses, and the `ATTRIBUTION` string on every paid output.
+
+### Defects in `access.ts` that only matter once money is involved
+
+Recorded so they are not rediscovered the hard way. None of them affect the free
+product, which is why they are still here.
+
+- **Keys are parsed once at startup.** Adding or revoking a customer needs a
+  restart, which also wipes every rate-limit counter.
+- **An unknown tier string silently becomes `anonymous`.** `key:Pro` downgrades
+  a paying customer with no error, which is the exact failure the unknown-key
+  branch was written to avoid.
+- **Rate-limit counters are per-process and in memory.** Two instances behind a
+  load balancer give every caller double their quota, and a deploy resets
+  everyone.
+- **`trust proxy` is never set**, so behind a proxy every anonymous caller
+  shares one `req.ip` bucket.
+- **Unauthenticated requests fall through to `anonymous`** even when keys are
+  configured. A hosted deployment must reject instead.
+
 ## Status
 
 Boundary in place, nothing behind it. No billing, no hosted deployment, no

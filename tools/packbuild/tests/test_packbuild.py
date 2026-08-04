@@ -7,12 +7,13 @@ schedule.
 from __future__ import annotations
 
 import json
+import math
 import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
 
-from packbuild import build_broadband, build_mobile, validate  # noqa: E402
+from packbuild import baselines, build_broadband, build_crime_baseline, build_mobile, validate  # noqa: E402
 from packbuild.osgb import to_wgs84  # noqa: E402
 from packbuild.shard import area_of, normalise, write_pack  # noqa: E402
 
@@ -93,6 +94,42 @@ def test_mobile_build_inverts_the_none_column(tmp_path):
     # Fixture: 5G_..._prem_out_4 = 1.22, 5G_..._prem_out_0 = 1.78 → any = 98.22
     assert pack["areas"]["E06000001"][:2] == [1, 98]
     assert pack["names"]["E06000001"] == "Hartlepool"
+
+
+def test_crime_baseline_month_arithmetic_crosses_years():
+    assert build_crime_baseline.previous_month("2026-06", 0) == "2026-06"
+    assert build_crime_baseline.previous_month("2026-06", 2) == "2026-04"
+    assert build_crime_baseline.previous_month("2026-01", 1) == "2025-12"
+    assert build_crime_baseline.previous_month("2026-01", 13) == "2024-12"
+
+
+def test_crime_baseline_box_is_one_square_kilometre():
+    # Four corners, and the box must match the one js/providers/crime.js queries,
+    # or the baseline would describe a different sized area than the report.
+    poly = build_crime_baseline.box_poly(51.5, -0.1)
+    corners = [tuple(float(v) for v in c.split(",")) for c in poly.split(":")]
+    assert len(corners) == 4
+
+    lats = sorted({round(c[0], 5) for c in corners})
+    lngs = sorted({round(c[1], 5) for c in corners})
+    height_m = (lats[1] - lats[0]) * 111320
+    width_m = (lngs[1] - lngs[0]) * 111320 * math.cos(math.radians(51.5))
+    assert 990 < height_m < 1010
+    assert 990 < width_m < 1010
+
+
+def test_baselines_keeps_the_previous_crime_block_when_sampling_is_skipped(tmp_path):
+    # A failed or skipped sampling run must not silently delete the benchmark the
+    # crime card depends on; the card degrades to an unbenchmarked count only if
+    # there was never one.
+    (tmp_path / "baselines.json").write_text(json.dumps({
+        "generated": "2026-01-01",
+        "crime": {"median": 16, "p25": 2, "p75": 77, "p90": 236, "period": "2025-10..2025-12"},
+    }))
+    out = baselines.build(tmp_path, "2026-08-05", log=lambda *_: None, with_crime=False)
+    assert out["crime"]["median"] == 16
+    assert out["crime"]["period"] == "2025-10..2025-12"
+    assert out["generated"] == "2026-08-05"
 
 
 def test_validate_flags_a_bad_shard(tmp_path):

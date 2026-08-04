@@ -4,7 +4,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { CATEGORY_IDS, type CategoryId } from '../constants.js';
 import { buildReport, getRegistry, isPostcodeError, lookupPostcode } from '../services/data.js';
 import {
-  capText, categoryMarkdown, placeHeading, sourceLines, toolError, withAttribution,
+  capJson, capText, categoryMarkdown, placeHeading, sourceLines, toolError, withAttribution,
 } from '../services/format.js';
 import { ResponseFormat } from '../types.js';
 
@@ -68,7 +68,7 @@ export function registerReportTool(server: McpServer) {
       title: 'UK postcode neighbourhood report',
       description: `Full neighbourhood report for one UK postcode, assembled live from UK government open data.
 
-Covers eleven categories: demographics (Census 2021), crime (data.police.uk), deprivation (IMD/WIMD/SIMD/NIMDM), property prices (HM Land Registry), broadband and 5G (Ofcom), noise (Defra), transport, amenities (OpenStreetMap), schools (DfE/Ofsted) and planning constraints (Planning Data platform, Environment Agency).
+Covers eleven categories: demographics (Census 2021), crime (data.police.uk), deprivation (IMD/WIMD/SIMD/NIMDM), property prices (HM Land Registry), broadband and 5G (Ofcom), noise (Defra), transport, amenities (OpenStreetMap), schools (DfE register: name, phase and distance only, no Ofsted grades) and planning constraints (Planning Data platform, Environment Agency).
 
 Every figure carries the geography it describes (a postcode, an LSOA of ~1,500 people, or a whole local authority), the period it covers, and a benchmark where one exists. Read those: a crime count describes a 1 km square, and Ofcom mobile coverage describes an entire local authority, not the street.
 
@@ -82,7 +82,7 @@ Returns:
   Per category: a status, a one-paragraph summary, the facts (label, value, band, benchmark, geography, period, source id) and any caveats.
 
   Statuses that are normal rather than failures:
-  - "out_of_coverage": the dataset genuinely does not cover this nation. Census tables are England & Wales; police.uk excludes Scotland; Planning Data, Defra noise and Ofsted are England-only. The reason and the devolved equivalent are given.
+  - "out_of_coverage": the dataset genuinely does not cover this nation. Census tables are England & Wales; police.uk excludes Scotland; Planning Data, Defra noise and the DfE school register are England-only. The reason and the devolved equivalent are given.
   - "unavailable": a pre-built extract has not been generated for this area yet (noise, currently).
   - "partial": some sources answered and some did not; check notes.
 
@@ -159,7 +159,30 @@ Not a survey, valuation or conveyancing search. Check anything decision-critical
 
       let text: string;
       if (response_format === ResponseFormat.JSON) {
-        text = JSON.stringify(structured, null, 2);
+        // Shed the least useful thing first: notes, then the tail of each
+        // category's facts, then whole categories. Never a string slice.
+        text = capJson(
+          structured,
+          'Request fewer categories to see everything.',
+          current => {
+            const withNotes = current.categories.find(c => c.notes.length);
+            if (withNotes) {
+              return { ...current, categories: current.categories.map(c => ({ ...c, notes: [] })) };
+            }
+            const longest = current.categories.reduce(
+              (a, b) => (b.facts.length > a.facts.length ? b : a), current.categories[0]!);
+            if (longest && longest.facts.length > 1) {
+              return {
+                ...current,
+                categories: current.categories.map(c =>
+                  c === longest ? { ...c, facts: c.facts.slice(0, -1) } : c),
+              };
+            }
+            return current.categories.length > 1
+              ? { ...current, categories: current.categories.slice(0, -1) }
+              : null;
+          },
+        );
       } else {
         const lines = [`# ${placeHeading(place)}`, ''];
         lines.push(
@@ -180,10 +203,11 @@ Not a survey, valuation or conveyancing search. Check anything decision-critical
         content: [
           {
             type: 'text' as const,
-            text: capText(
-              text,
-              'Request fewer categories, or response_format="json" for a denser payload.',
-            ),
+            // capJson has already capped the JSON path; only markdown needs the
+            // string cap, and cutting prose short is safe.
+            text: response_format === ResponseFormat.JSON
+              ? text
+              : capText(text, 'Request fewer categories, or response_format="json" for a denser payload.'),
           },
         ],
         structuredContent: structured,

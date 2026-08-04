@@ -18,7 +18,15 @@ const check = (name, ok, detail = '') => {
 };
 
 const client = new Client({ name: 'smoke', version: '0.0.0' });
-await client.connect(new StdioClientTransport({ command: process.execPath, args: [entry] }));
+// StdioClientTransport passes only a safe subset of the environment through by
+// default, which silently drops AHS_BASE_URL — so a run intended to test local
+// data would quietly test the published site instead.
+await client.connect(new StdioClientTransport({
+  command: process.execPath,
+  args: [entry],
+  env: { ...process.env },
+}));
+if (process.env.AHS_BASE_URL) console.log(`(reading data from ${process.env.AHS_BASE_URL})`);
 
 const { tools } = await client.listTools();
 const names = tools.map(t => t.name).sort();
@@ -83,6 +91,42 @@ check('get_dataset returns the full entry',
 
 const missing = await call('postcode_get_dataset', { id: 'not-a-real-id' });
 check('get_dataset suggests alternatives for a bad id', missing.isError);
+
+// --- the honesty defects, each of which shipped once and must not ship again
+
+const schoolsCall = await client.callTool({
+  name: 'postcode_report',
+  arguments: { postcode: 'SW11 1AA', categories: ['schools'], response_format: 'markdown' },
+});
+const schoolsText = schoolsCall.content?.[0]?.text ?? '';
+// The pack has no Ofsted grades. Nothing may imply it does.
+check('schools never claims an Ofsted grade it does not have',
+  !/Ofsted:\s*\w/.test(schoolsText) && !/GIAS\/Ofsted/.test(schoolsText),
+  schoolsText.match(/Ofsted[^.]{0,60}/)?.[0] ?? 'no Ofsted claim');
+check('schools declares the Ofsted gap instead of staying silent',
+  /Ofsted grades are not in this extract/i.test(schoolsText));
+
+const crimeReport = await call('postcode_report', { postcode: 'SW11 1AA', categories: ['crime'] });
+const crimeFacts = crimeReport.structured?.categories?.[0]?.facts ?? [];
+const total = crimeFacts.find(f => f.label === 'Recorded crimes');
+check('crime count carries a national benchmark', !!total?.benchmark, total?.benchmark ?? 'none');
+check('crime count is banded against the distribution', !!total?.band, total?.band ?? 'none');
+
+// A truncated JSON response used to be sliced mid-token, handing the model
+// something unparseable. Force truncation and confirm it still parses.
+const big = await client.callTool({
+  name: 'postcode_compare',
+  arguments: {
+    postcodes: ['SW11 1AA', 'M1 1AE', 'LA23 1AA', 'CF10 1EP'],
+    categories: ['demographics', 'crime', 'prices', 'broadband', 'amenities', 'transport'],
+    response_format: 'json',
+  },
+});
+const bigText = big.content?.[0]?.text ?? '';
+let parsed = null;
+try { parsed = JSON.parse(bigText); } catch { /* the failure this test exists for */ }
+check('an oversized JSON response is still valid JSON', parsed !== null,
+  `${bigText.length} chars${parsed?.truncated ? ', truncated and flagged' : ''}`);
 
 await client.close();
 console.log(failures ? `\n${failures} check(s) failed` : '\nall checks passed');

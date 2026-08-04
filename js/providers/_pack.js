@@ -18,7 +18,14 @@ let manifest;
 
 export function packManifest() {
   if (!manifest) {
-    manifest = getJSON(packUrl('manifest.json')).catch(() => null);
+    // Memoise the success, never the failure: caching a null here would mean one
+    // blip at startup permanently strips the extract date off every pack for the
+    // life of the process. fetchx already caches the successful response, so a
+    // retry after a failure costs a request at most once.
+    manifest = getJSON(packUrl('manifest.json')).catch(() => {
+      manifest = undefined;
+      return null;
+    });
   }
   return manifest;
 }

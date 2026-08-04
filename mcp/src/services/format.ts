@@ -64,6 +64,10 @@ export function sourceLines(category: CategoryResult, registry: Registry | null)
 /**
  * Truncation is announced, never silent: an agent that cannot tell a partial
  * answer from a complete one will happily report the partial as complete.
+ *
+ * Prose degrades gracefully when you cut it. JSON does not: slicing a serialised
+ * document mid-token hands the model something it cannot parse, and the failure
+ * looks like a bug in the model rather than in us. Use capJson for JSON.
  */
 export function capText(text: string, hint: string): string {
   if (text.length <= CHARACTER_LIMIT) return text;
@@ -71,6 +75,46 @@ export function capText(text: string, hint: string): string {
     `${text.slice(0, CHARACTER_LIMIT)}\n\n---\n` +
     `**Response truncated at ${CHARACTER_LIMIT.toLocaleString('en-GB')} characters.** ${hint}`
   );
+}
+
+/**
+ * Serialise a payload, shrinking the data until it fits rather than cutting the
+ * string. Always returns valid JSON.
+ *
+ * `shrink` should return a smaller version of the payload, or null when there is
+ * nothing left to drop. The result carries `truncated` and `truncation_message`
+ * so the caller knows it is holding a partial answer.
+ */
+export function capJson<T extends object>(
+  payload: T,
+  hint: string,
+  shrink: (current: T) => T | null,
+): string {
+  let current = payload;
+  let dropped = false;
+
+  for (;;) {
+    const text = JSON.stringify(
+      dropped ? { ...current, truncated: true, truncation_message: hint } : current,
+      null,
+      2,
+    );
+    if (text.length <= CHARACTER_LIMIT) return text;
+
+    const smaller = shrink(current);
+    if (!smaller) {
+      // Nothing left to drop and it still does not fit. A tiny valid document
+      // saying so beats an unparseable slice of a large one.
+      return JSON.stringify({
+        truncated: true,
+        truncation_message:
+          `${hint} The response could not be reduced below the ` +
+          `${CHARACTER_LIMIT.toLocaleString('en-GB')} character limit.`,
+      }, null, 2);
+    }
+    current = smaller;
+    dropped = true;
+  }
 }
 
 export function withAttribution(text: string): string {

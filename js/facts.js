@@ -54,7 +54,11 @@ export function fact(spec) {
     sourceId: spec.sourceId,
     note: spec.note || null,
   };
-  f.comparison = compare(f.key, f.value, f.benchmarks);
+  // A provider may supply its own comparison when it knows something the static
+  // threshold table cannot: crime counts are so skewed across the country that
+  // a ratio against the average is meaningless, so that provider bands by
+  // percentile against a sampled distribution instead.
+  f.comparison = spec.comparison ?? compare(f.key, f.value, f.benchmarks);
   return f;
 }
 

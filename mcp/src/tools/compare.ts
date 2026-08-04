@@ -3,7 +3,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import { CATEGORY_IDS, type CategoryId } from '../constants.js';
 import { buildReport, isPostcodeError, lookupPostcode } from '../services/data.js';
-import { capText, toolError, withAttribution } from '../services/format.js';
+import { capJson, capText, toolError, withAttribution } from '../services/format.js';
 import type { CategoryResult, Place } from '../types.js';
 import { ResponseFormat } from '../types.js';
 
@@ -188,7 +188,14 @@ Don't use when: you have one postcode (use postcode_report) or want the underlyi
 
       let text: string;
       if (response_format === ResponseFormat.JSON) {
-        text = JSON.stringify(structured, null, 2);
+        // Drop whole measure rows from the end rather than slicing the string.
+        text = capJson(
+          structured,
+          'Compare fewer postcodes or fewer categories.',
+          current => (current.rows.length > 1
+            ? { ...current, rows: current.rows.slice(0, -1) }
+            : null),
+        );
       } else {
         const lines = [`# Comparing ${columns.join(' · ')}`, ''];
         lines.push(
@@ -218,7 +225,9 @@ Don't use when: you have one postcode (use postcode_report) or want the underlyi
         content: [
           {
             type: 'text' as const,
-            text: capText(text, 'Compare fewer postcodes or fewer categories.'),
+            text: response_format === ResponseFormat.JSON
+              ? text
+              : capText(text, 'Compare fewer postcodes or fewer categories.'),
           },
         ],
         structuredContent: structured,
