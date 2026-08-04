@@ -7,8 +7,10 @@
  *   agentic-house-uk --http --port 9000 --host 0.0.0.0
  *
  * Environment:
- *   AHS_BASE_URL   site root to read data from (default: the published GitHub Pages site)
+ *   AHS_BASE_URL     site root to read data from (default: the published GitHub Pages site)
  *   ALLOWED_ORIGINS  comma-separated Origin allowlist for HTTP mode
+ *   API_KEYS         comma-separated `key` or `key:pro` — unset means open access
+ *   RATE_LIMIT_ANONYMOUS / RATE_LIMIT_PRO / RATE_LIMIT_WINDOW_MS
  */
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
@@ -16,6 +18,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import express from 'express';
 
 import { DEFAULT_BASE_URL, SERVER_NAME, SERVER_VERSION } from './constants.js';
+import { authenticate, describeAccess, loadAccessConfig, rateLimit } from './services/access.js';
 import { init } from './services/data.js';
 import { createServer } from './server.js';
 
@@ -86,6 +89,12 @@ async function runHttp({ port, host }: Options) {
     res.json({ name: SERVER_NAME, version: SERVER_VERSION, ok: true });
   });
 
+  // Gating applies to this transport only. Running the server yourself stays
+  // free and ungated; with no API_KEYS set this is just a courtesy limit that
+  // keeps one runaway agent from burning the upstream fair-use budgets.
+  const access = loadAccessConfig();
+  app.use('/mcp', authenticate(access), rateLimit(access));
+
   // Stateless: a fresh server and transport per request, so there is no session
   // state to lose and the process scales horizontally without stickiness.
   app.post('/mcp', async (req, res) => {
@@ -124,6 +133,7 @@ async function runHttp({ port, host }: Options) {
   await new Promise<void>(resolve => {
     app.listen(port, host, () => {
       log(`${SERVER_NAME} ${SERVER_VERSION} listening on http://${host}:${port}/mcp`);
+      log(`access: ${describeAccess(access)}`);
       resolve();
     });
   });

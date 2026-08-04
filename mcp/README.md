@@ -94,9 +94,19 @@ This is not a survey, a valuation or a conveyancing search.
 | --- | --- | --- |
 | `AHS_BASE_URL` | the published Pages site | Where to read the registry and pack extracts. Point it at `http://localhost:8000/` to develop against a local checkout. |
 | `ALLOWED_ORIGINS` | none | Comma-separated `Origin` allowlist for HTTP mode. Requests carrying any other `Origin` are rejected with 403. |
+| `API_KEYS` | unset | HTTP mode only. Comma-separated `key` or `key:pro`. Unset means every caller is anonymous and nothing is rejected. |
+| `RATE_LIMIT_ANONYMOUS` | 60/hour | HTTP mode only. A courtesy limit so one runaway agent cannot burn the upstream fair-use budgets. |
+| `RATE_LIMIT_PRO` | 1000/hour | HTTP mode only. |
 
-HTTP mode binds to `127.0.0.1` by default and is stateless — a fresh server per
+HTTP mode binds to `127.0.0.1` by default and is stateless: a fresh server per
 request, so it scales horizontally with no session affinity.
+
+**Running it yourself is free and ungated, and stays that way.** stdio has no
+limits at all, and `--http` with no `API_KEYS` set is open. The rate limiting
+exists so that a *shared* deployment is a good neighbour to the government APIs
+underneath, not to nudge you toward a paid tier. There isn't one. See
+[COMMERCIAL.md](COMMERCIAL.md) for where that boundary sits and what would have
+to be true before any of it were sold.
 
 ## Development
 
