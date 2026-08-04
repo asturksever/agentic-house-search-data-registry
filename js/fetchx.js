@@ -7,17 +7,37 @@
 const TIMEOUT_MS = 8000;
 const CACHE_PREFIX = 'ahs.cache.';
 
+// Caching is an optimisation, never a requirement: a browser gets sessionStorage
+// (per tab, cleared on close), a Node host gets a plain Map, and anything that
+// has neither simply refetches.
+const memory = new Map();
+
+const store = typeof sessionStorage !== 'undefined'
+  ? {
+      get: key => sessionStorage.getItem(key),
+      set: (key, value) => sessionStorage.setItem(key, value),
+    }
+  : {
+      get: key => (memory.has(key) ? memory.get(key) : null),
+      set: (key, value) => memory.set(key, value),
+    };
+
 function cacheGet(key) {
   try {
-    const raw = sessionStorage.getItem(CACHE_PREFIX + key);
+    const raw = store.get(CACHE_PREFIX + key);
     return raw ? JSON.parse(raw) : null;
   } catch { return null; }
 }
 
 function cacheSet(key, value) {
   try {
-    sessionStorage.setItem(CACHE_PREFIX + key, JSON.stringify(value));
-  } catch { /* quota or private mode — caching is an optimisation, not a requirement */ }
+    store.set(CACHE_PREFIX + key, JSON.stringify(value));
+  } catch { /* quota, private mode, whatever — dropping the cache is harmless */ }
+}
+
+/** Drop everything cached. Long-lived hosts call this to avoid serving stale data. */
+export function clearCache() {
+  memory.clear();
 }
 
 export class HttpError extends Error {

@@ -6,16 +6,19 @@
 // fetches the shard it needs.
 
 import { getJSON, HttpError } from '../fetchx.js';
+import { resolve } from '../config.js';
 
-// Override to serve packs from elsewhere (they are the only part of this repo
-// that grows, so they may end up in a sibling repo).
+// Packs are the only part of this repo that grows, so they may one day be
+// served from a sibling repo; every reader goes through this one function.
 export const PACKS_BASE = 'packs';
+
+export const packUrl = path => resolve(`${PACKS_BASE}/${path}`);
 
 let manifest;
 
 export function packManifest() {
   if (!manifest) {
-    manifest = getJSON(`${PACKS_BASE}/manifest.json`).catch(() => null);
+    manifest = getJSON(packUrl('manifest.json')).catch(() => null);
   }
   return manifest;
 }
@@ -27,7 +30,7 @@ export function packManifest() {
  */
 export async function loadRaw(name, area) {
   try {
-    return await getJSON(`${PACKS_BASE}/${name}/${area}.json`, { retry: 0 });
+    return await getJSON(packUrl(`${name}/${area}.json`), { retry: 0 });
   } catch (err) {
     if (err instanceof HttpError && err.status === 404) return null;
     throw err;
@@ -42,7 +45,7 @@ export async function loadRaw(name, area) {
 export async function loadPack(name, area) {
   let shard;
   try {
-    shard = await getJSON(`${PACKS_BASE}/${name}/${area}.json`, { retry: 0 });
+    shard = await getJSON(packUrl(`${name}/${area}.json`), { retry: 0 });
   } catch (err) {
     if (err instanceof HttpError && err.status === 404) return null;
     throw err;

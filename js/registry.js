@@ -2,11 +2,13 @@
 // postcode report read from data/registry.json through here, so a card's
 // publisher/licence/cadence line is never written out by hand twice.
 
+import { resolve } from './config.js';
+
 let cached = null;
 
 export async function loadRegistry() {
   if (cached) return cached;
-  const res = await fetch(new URL('data/registry.json', document.baseURI));
+  const res = await fetch(resolve('data/registry.json'));
   if (!res.ok) throw new Error(`registry.json: HTTP ${res.status}`);
   const data = await res.json();
   data.byId = Object.fromEntries(data.sources.map(s => [s.id, s]));

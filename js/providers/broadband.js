@@ -2,7 +2,7 @@
 
 import { getJSON } from '../fetchx.js';
 import { fact, result, finish, fmt } from '../facts.js';
-import { loadPack, notBuilt, PACKS_BASE } from './_pack.js';
+import { loadPack, notBuilt, packUrl } from './_pack.js';
 import { noteFailure } from './_util.js';
 
 const SOURCE = 'ofcom-broadband';
@@ -42,7 +42,7 @@ export default {
 
     // National means come from the same extract, so a benchmark can never
     // describe a different vintage from the value beside it.
-    const uk = await getJSON(`${PACKS_BASE}/baselines.json`).catch(() => null);
+    const uk = await getJSON(packUrl('baselines.json')).catch(() => null);
 
     const geography = { level: 'Postcode', code: place.compact, name: place.postcode };
     const period = pack.generated ? `Ofcom extract, ${pack.generated}` : 'Ofcom Connected Nations';
