@@ -1,14 +1,34 @@
-# Agentic House Search Data Registry
+# Agentic House Search
 
-A machine-readable registry of **45 UK open datasets and APIs** for automated house and neighbourhood research — everything an agent needs to answer "should I buy here?" without a human opening 20 browser tabs.
+**Enter a UK postcode, get what government open data actually says about that
+neighbourhood.** Demographics, crime, deprivation, prices, fibre, 5G, noise,
+transport, amenities, schools and planning constraints, assembled live from the
+publishers' own APIs.
 
-**Live site:** https://asturksever.github.io/agentic-house-search-data-registry/
+Three ways in, all free and open:
 
-Each entry records the dataset's home page, its machine-readable API endpoint, format, licence, geographic coverage, update cadence, and the concrete questions it can answer.
+| | |
+| --- | --- |
+| **[Postcode report](https://asturksever.github.io/agentic-house-search-data-registry/report.html)** | The website. Type a postcode, read the answer. |
+| **[MCP server](mcp/README.md)** | `npx agentic-house-search`, so any AI agent can do the same. On [npm](https://www.npmjs.com/package/agentic-house-search). |
+| **[Dataset registry](https://asturksever.github.io/agentic-house-search-data-registry/)** | The 45 open datasets underneath, with endpoints, licences and coverage. |
 
 ## Why this exists
 
-UK property intelligence sites (CrystalRoof, PropertyData, and others) are largely assembled from public data. This registry maps out that raw material — the Open Government Licence datasets and free APIs underneath — so anyone building an agentic property search can go straight to the source.
+UK property intelligence sites (CrystalRoof, PropertyData and others) are
+largely assembled from public data. This project maps out that raw material, the
+Open Government Licence datasets and free APIs underneath, and then shows what
+you can build with it: a working report, and an agent-ready interface to the
+same thing.
+
+Two rules it holds itself to, which is most of the point:
+
+1. **It never invents a comparison.** Every band word ("above the UK average")
+   comes from a threshold table and always sits next to the figure it describes.
+2. **It never pretends to cover ground it does not.** A Scottish postcode is
+   told that `data.police.uk` excludes Scotland, with a link to Police Scotland,
+   rather than being shown a zero. Deprivation is computed against each nation's
+   own index and denominator.
 
 ## Contents
 
@@ -18,7 +38,10 @@ UK property intelligence sites (CrystalRoof, PropertyData, and others) are large
 | [`data/registry.csv`](data/registry.csv) | Flat table for spreadsheets (generated) |
 | [`index.html`](index.html) | Searchable catalogue of every entry |
 | [`report.html`](report.html) | Postcode report — pulls live values out of these sources for one postcode |
-| [`tools/`](tools) | `gen_derived.py` (regenerates the CSV and the README tables), `validate_registry.py`, `check_provider_ids.py` |
+| [`js/`](js) | The provider layer: one module per category, plus the thresholds and coverage gates. Shared by the website and the MCP server. |
+| [`mcp/`](mcp/README.md) | MCP server, published as [`agentic-house-search`](https://www.npmjs.com/package/agentic-house-search) |
+| [`packs/`](tools/packbuild/README.md) | Pre-built extracts for the sources that publish bulk files instead of an API |
+| [`tools/`](tools) | `gen_derived.py` (regenerates the CSV and the README tables), `validate_registry.py`, `check_provider_ids.py`, `check_pages.py`, `packbuild/` |
 
 Both pages fetch `data/registry.json` at runtime, so they need to be served over
 HTTP rather than opened from disk: `python3 -m http.server 8000`, then
@@ -72,6 +95,9 @@ python3 -m http.server 8000   # then http://localhost:8000/report.html?postcode=
 Protocol — five tools: a full postcode report, a fast geography lookup, a
 side-by-side comparison of up to five postcodes, and search/fetch over the
 registry itself.
+
+Published on npm as
+[`agentic-house-search`](https://www.npmjs.com/package/agentic-house-search):
 
 ```json
 {
