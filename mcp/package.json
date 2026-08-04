@@ -17,13 +17,14 @@
     "uk-postcode-mcp-server": "dist/index.js"
   },
   "main": "dist/index.js",
-  "files": ["dist", "README.md"],
+  "files": ["dist", "src", "README.md"],
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "build": "tsc && node scripts/bundle-providers.mjs",
-    "prepublishOnly": "npm run build",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run smoke",
     "start": "node dist/index.js",
     "smoke": "node scripts/smoke.mjs",
     "inspect": "npx @modelcontextprotocol/inspector node dist/index.js"
