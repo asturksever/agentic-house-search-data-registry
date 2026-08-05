@@ -21,7 +21,7 @@ const git = (args, cwd) => execFileSync('git', args, { cwd, encoding: 'utf8' });
 
 // Everything the Vercel build command and the function need at runtime. A path
 // under one of these prefixes must survive the upload.
-const REQUIRED_PREFIXES = ['api/', 'js/', 'mcp/src/', 'mcp/scripts/'];
+const REQUIRED_PREFIXES = ['api/', 'js/', 'mcp/src/', 'mcp/scripts/', 'public/'];
 const REQUIRED_FILES = [
   'vercel.json',
   'mcp/package.json',
@@ -56,6 +56,18 @@ try {
 }
 
 const missingRequired = REQUIRED_FILES.filter(path => !tracked.includes(path));
+
+// The build does not create the output directory — it is committed. Vercel
+// fails the deployment outright when it is missing, after a build that
+// otherwise succeeded, so check it here rather than discovering it there.
+const { outputDirectory } = JSON.parse(readFileSync(join(repoRoot, 'vercel.json'), 'utf8'));
+if (outputDirectory && !needed.some(path => path.startsWith(`${outputDirectory}/`))) {
+  process.stderr.write(
+    `vercel.json#outputDirectory is "${outputDirectory}", but no tracked file survives ` +
+      'the upload under it — Vercel will fail with "No Output Directory found".\n',
+  );
+  process.exit(1);
+}
 
 if (excluded.length || missingRequired.length) {
   for (const path of excluded) {
