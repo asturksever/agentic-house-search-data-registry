@@ -1,6 +1,7 @@
 {
   "name": "agentic-house-search",
-  "version": "0.1.2",
+  "mcpName": "io.github.asturksever/agentic-house-search",
+  "version": "0.1.3",
   "description": "MCP server for UK neighbourhood research: a full postcode report (demographics, crime, deprivation, prices, fibre, 5G, transport, amenities, schools, planning constraints) plus a searchable registry of the 45 open datasets behind it.",
   "keywords": [
     "mcp",

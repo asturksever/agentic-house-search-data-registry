@@ -35,6 +35,19 @@ const found = [
   ['server.json (npm package version)', npmEntry?.version ?? null],
 ];
 
+// The registry proves you own the npm package you point it at by reading
+// `mcpName` out of the *published* package and checking it against the server
+// name. Get it wrong and the publish fails after npm has already accepted the
+// release, so the only fix is another version bump — which is exactly what
+// happened once.
+if (pkg.mcpName !== registry.name) {
+  process.stderr.write(
+    `mcp/package.json#mcpName is ${pkg.mcpName ?? '(missing)'}, but server.json#name is ` +
+      `${registry.name}. The MCP registry compares these and rejects the publish.\n`,
+  );
+  process.exit(1);
+}
+
 const mismatched = found.filter(([, version]) => version !== pkg.version);
 
 if (mismatched.length) {

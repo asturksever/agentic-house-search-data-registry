@@ -179,12 +179,20 @@ push, so a deployment that would break should go red in Actions first.
 
 [`server.json`](../server.json) is the entry for the official MCP registry,
 which is how a client can offer this server by name rather than by URL. Publish
-it with the registry's own CLI, from the repository root:
+it with the registry's own CLI (`brew install mcp-publisher`), from the
+repository root:
 
 ```bash
 mcp-publisher login github
 mcp-publisher publish
 ```
+
+**Publish to npm first.** The registry proves you own the package you point it
+at by reading `mcpName` out of the *published* npm package and comparing it with
+`server.json#name` — so it validates what npm already has, not what is in this
+repo. A version listed in `server.json` that npm has never seen fails, and
+because npm will not accept the same version twice, the fix is another bump.
+`npm run check:versions` compares both fields locally and runs in CI.
 
 ## Development
 
