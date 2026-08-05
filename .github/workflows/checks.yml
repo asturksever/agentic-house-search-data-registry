@@ -50,6 +50,13 @@ jobs:
         working-directory: mcp
         run: npm run check:deploy
 
+      # Four files carry the version and only one of them is updated by
+      # `npm version`. Drift is silent: clients get told the wrong version and
+      # the registry offers one that was never published.
+      - name: The version agrees with itself
+        working-directory: mcp
+        run: npm run check:versions
+
       - name: Build the MCP server
         working-directory: mcp
         run: |

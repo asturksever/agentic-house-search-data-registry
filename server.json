@@ -3,7 +3,7 @@
   "name": "io.github.asturksever/agentic-house-search",
   "title": "Agentic House Search",
   "description": "UK neighbourhood research from government open data: postcode reports, comparisons, 45 datasets.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "websiteUrl": "https://agentic-house-search.vercel.app/connect.html",
   "repository": {
     "url": "https://github.com/asturksever/agentic-house-search-data-registry",
@@ -21,8 +21,10 @@
     {
       "registryType": "npm",
       "identifier": "agentic-house-search",
-      "version": "0.1.1",
-      "transport": { "type": "stdio" }
+      "version": "0.1.2",
+      "transport": {
+        "type": "stdio"
+      }
     }
   ]
 }
