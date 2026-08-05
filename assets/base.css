@@ -67,14 +67,53 @@ h1{font-family:var(--display);font-weight:600;font-size:33px;line-height:1.15;le
    eye loses the line it is returning to. */
 .sub{color:var(--muted);max-width:70ch;margin:0 0 24px}
 
-/* Masthead bar: wordmark left, section nav right, hairline under. Identical on
-   every page, so only the `.here` link and the h1 beneath it change. */
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;
-  flex-wrap:wrap;padding:20px 0 14px;margin:0 0 30px;border-bottom:1px solid var(--line)}
-.topbar .mark{font-family:var(--display);font-weight:600;font-size:16.5px;
-  letter-spacing:.01em;color:var(--ink);text-decoration:none;white-space:nowrap}
+/* Masthead bar: brand lockup left, section nav right, hairline under. Identical
+   on every page, so only the `.here` link and the h1 beneath it change.
+
+   Sticky, so the brand and the section nav stay reachable down a 45-card
+   catalogue or an eleven-section report. It needs an opaque background and a
+   z-index above the report's own sticky anchor strip, which docks beneath it —
+   see --topbar-h. */
+.topbar{position:sticky;top:0;z-index:20;background:var(--bg);
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  flex-wrap:wrap;padding:16px 0 14px;margin:0 0 30px;border-bottom:1px solid var(--line)}
+
+/* Height of the bar, published so a second sticky element can sit under it.
+   js/topbar.js keeps this exact — the fallback matters only for the first
+   paint and for anyone with JS off. */
+:root{--topbar-h:66px}
+
+/* The lockup: keyline house with a rising bar chart inside it. The house is ink
+   and inherits currentColor so the hover state carries both halves; the bars are
+   brass. It is a graphic, never the only carrier of meaning, and the wordmark
+   next to it always says the name in full. */
+.topbar .mark{display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--display);font-weight:600;font-size:19px;
+  letter-spacing:.005em;color:var(--ink);text-decoration:none;white-space:nowrap}
 .topbar .mark:hover{color:var(--accent)}
+.logo{width:29px;height:29px;flex:none;display:block}
+.logo .house{fill:none;stroke:currentColor;stroke-width:2.1;stroke-linejoin:round}
+.logo .bars{stroke:var(--rule);stroke-width:2.3;stroke-linecap:round;fill:none}
 .topbar .nav{margin:0}
+
+/* Four sections wrap to three rows on a phone, and a sticky bar that deep eats
+   a fifth of the screen for good. Below this width the lockup shrinks and the
+   nav becomes one scrollable row — the same move the report already makes with
+   its category anchors. */
+@media (max-width:560px){
+  .topbar{padding:12px 0 10px;margin:0 0 22px;gap:10px}
+  .topbar .mark{font-size:17px;gap:8px}
+  .logo{width:25px;height:25px}
+  .topbar .nav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    width:100%;gap:16px;scrollbar-width:none;
+    /* The last section is clipped mid-word with the scrollbar hidden, which
+       reads as a rendering fault rather than as "there is more". Fading the
+       edge is the only cue left that it scrolls. */
+    -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 26px),transparent);
+    mask-image:linear-gradient(to right,#000 calc(100% - 26px),transparent)}
+  .topbar .nav::-webkit-scrollbar{display:none}
+  .topbar .nav a{white-space:nowrap}
+}
 
 .nav{display:flex;gap:18px;font-size:14px;margin:0 0 18px}
 .nav a{color:var(--muted);text-decoration:none;border-bottom:2px solid transparent;padding-bottom:2px}
@@ -97,7 +136,9 @@ select{padding:9px 12px;border:1px solid var(--line);border-radius:4px;backgroun
 .btn:disabled{opacity:.5;cursor:default}
 
 .count{color:var(--muted);font-size:13.5px;margin:0 0 14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin-bottom:14px}
+/* Deep-linked cards (registry.html#src-epc) must clear the sticky masthead. */
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin-bottom:14px;
+  scroll-margin-top:calc(var(--topbar-h) + 14px)}
 .card h2{font-family:var(--display);font-weight:600;font-size:21px;line-height:1.3;margin:0 0 3px}
 .pub{color:var(--muted);font-size:13.5px;margin:0 0 12px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}

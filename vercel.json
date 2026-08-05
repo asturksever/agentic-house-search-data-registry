@@ -1,0 +1,25 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm --prefix mcp ci && npm --prefix mcp run build",
+  "installCommand": "echo 'deps install in buildCommand'",
+  "env": {
+    "AHS_JS_ROOT": "js"
+  },
+  "functions": {
+    "api/mcp.mjs": {
+      "includeFiles": "js/**",
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    { "source": "/mcp", "destination": "/api/mcp" },
+    { "source": "/health", "destination": "/api/health" }
+  ],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "https://asturksever.github.io/agentic-house-search-data-registry/connect.html",
+      "permanent": false
+    }
+  ]
+}

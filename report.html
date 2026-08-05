@@ -24,17 +24,25 @@
     https://api.anthropic.com;
   base-uri 'self';
   form-action 'self';">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/base.css">
 <link rel="stylesheet" href="assets/report.css">
 </head>
 <body>
 <div class="wrap">
   <div class="topbar">
-    <a class="mark" href="index.html">Agentic House Search</a>
+    <a class="mark" href="index.html" aria-label="Agentic House Search — home">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path class="house" d="M5.4 14.6 16 5.9l10.6 8.7v11.3a.9.9 0 0 1-.9.9H6.3a.9.9 0 0 1-.9-.9V14.6Z"/>
+        <g class="bars"><path d="M11.4 22.6v-2.9"/><path d="M16 22.6v-5.3"/><path d="M20.6 22.6v-7.7"/></g>
+      </svg>
+      <span>Agentic House Search</span>
+    </a>
     <nav class="nav">
       <a href="index.html">Home</a>
       <a href="registry.html">Data registry</a>
       <a href="report.html" class="here">Postcode report</a>
+      <a href="connect.html">Connect an agent</a>
     </nav>
   </div>
   <h1>Postcode report</h1>
@@ -61,5 +69,6 @@
   </footer>
 </div>
 <script type="module" src="js/report.js"></script>
+<script type="module" src="js/topbar.js"></script>
 </body>
 </html>

@@ -1,0 +1,17 @@
+# The Vercel deployment is the MCP endpoint and nothing else — the website is on
+# GitHub Pages, and `/` here redirects there. So everything the website needs and
+# the function does not stays out of the upload.
+#
+# Written as an exclude list rather than `*` plus exceptions: gitignore syntax
+# cannot re-include a file whose name still matches a broad earlier pattern, and
+# an over-eager `*` here means a function that deploys without its providers.
+packs/
+data/
+assets/
+tools/
+.github/
+.cache/
+*.html
+mcp/node_modules/
+mcp/dist/
+mcp/*.tgz

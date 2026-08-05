@@ -9,11 +9,50 @@ It is the [postcode report](https://asturksever.github.io/agentic-house-search-d
 with an agent-shaped front door. Both run the *same* provider modules, so a
 threshold or a caveat is written once and shows up in both.
 
-## Install
+## Connect
 
-Nothing to clone. Add it to your MCP client's config:
+Nothing to install, no account, no API key. Paste this URL wherever your client
+asks for a connector, custom integration or MCP server URL:
 
-**Claude Desktop** (`claude_desktop_config.json`) or **Claude Code** (`.mcp.json`):
+```
+https://agentic-house-search.vercel.app/mcp
+```
+
+The [connect page](https://asturksever.github.io/agentic-house-search-data-registry/connect.html)
+has a copy button, one-click buttons for Cursor and VS Code, and the same
+instructions per client.
+
+**Claude Code:**
+
+```bash
+claude mcp add --transport http agentic-house-search https://agentic-house-search.vercel.app/mcp
+```
+
+**Anything that connects by editing JSON** — Claude Desktop
+(`claude_desktop_config.json`), a project `.mcp.json`, and most others:
+
+```json
+{
+  "mcpServers": {
+    "agentic-house-search": {
+      "type": "http",
+      "url": "https://agentic-house-search.vercel.app/mcp"
+    }
+  }
+}
+```
+
+`GET /health` says whether the endpoint is up, which is more useful than a
+client that only reports "connection failed".
+
+### Or run it yourself
+
+Free, ungated and with no dependency on the hosted deployment. Requires Node 20+.
+
+```bash
+npx -y agentic-house-search              # stdio
+npx -y agentic-house-search --http       # streamable HTTP on 127.0.0.1:8848
+```
 
 ```json
 {
@@ -25,16 +64,6 @@ Nothing to clone. Add it to your MCP client's config:
   }
 }
 ```
-
-Or over HTTP, for a client that connects by URL:
-
-```bash
-npx -y agentic-house-search --http --port 8848
-# POST http://127.0.0.1:8848/mcp   ·   GET /health
-```
-
-Requires Node 20+. No API key, no account: every source is a free public
-endpoint or a static extract served from GitHub Pages.
 
 ## Tools
 
@@ -93,6 +122,7 @@ This is not a survey, a valuation or a conveyancing search.
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `AHS_BASE_URL` | the published Pages site | Where to read the registry and pack extracts. Point it at `http://localhost:8000/` to develop against a local checkout. |
+| `AHS_JS_ROOT` | next to the compiled output | Where the shared `js/` provider modules live. Only needed when a bundler has moved the compiled server away from them, which is what the hosted deployment does. |
 | `ALLOWED_ORIGINS` | none | Comma-separated `Origin` allowlist for HTTP mode. Requests carrying any other `Origin` are rejected with 403. |
 | `API_KEYS` | unset | HTTP mode only. Comma-separated `key` or `key:pro`. Unset means every caller is anonymous and nothing is rejected. |
 | `RATE_LIMIT_ANONYMOUS` | 60/hour | HTTP mode only. A courtesy limit so one runaway agent cannot burn the upstream fair-use budgets. |
@@ -108,13 +138,61 @@ underneath, not to nudge you toward a paid tier. There isn't one. See
 [COMMERCIAL.md](COMMERCIAL.md) for where that boundary sits and what would have
 to be true before any of it were sold.
 
+## The hosted endpoint
+
+`https://agentic-house-search.vercel.app/mcp` is this same package, built from
+this repository, deployed as a serverless function
+([`api/mcp.mjs`](../api/mcp.mjs), [`vercel.json`](../vercel.json)). It exists so
+that connecting takes a URL rather than a config file. It is unauthenticated
+because there is nothing to authenticate: every source is public open data and
+the server holds no per-user state.
+
+Both HTTP hosts share [`src/http.ts`](src/http.ts), so the hosted endpoint and
+your own `--http` cannot drift apart in how they speak the protocol.
+
+### Deploying it
+
+**This repository is the deployment.** Vercel builds from GitHub: connect the
+repo once, and every push to `main` redeploys the endpoint. There is no CLI step,
+no separate copy of the source and nothing to remember to run — the same push
+that updates the Pages site updates the MCP server, and a revert reverts both.
+
+Setup is once, in Vercel's *Add New → Project → Import Git Repository*. Two
+things matter:
+
+- **Name the project `agentic-house-search`.** `vercel.json` carries every other
+  setting, but not the project name, and the project name is what the URL is
+  made of. Any other name and the documented URL is a lie — change it in
+  `connect.html`, `server.json`, both READMEs and `index.html`, or alias a
+  domain onto it.
+- **Leave the framework preset on "Other."** The build command and output are
+  already in `vercel.json`; a preset would override them.
+
+The build runs `npm ci && npm run build` in `mcp/`, and `AHS_JS_ROOT=js` tells
+the bundled function where the provider modules landed. `.vercelignore` keeps
+the website's own files out of the upload, since Pages serves those and `/` here
+redirects there.
+
+`npm run smoke:http` drives the same entrypoint locally and runs in CI on every
+push, so a deployment that would break should go red in Actions first.
+
+[`server.json`](../server.json) is the entry for the official MCP registry,
+which is how a client can offer this server by name rather than by URL. Publish
+it with the registry's own CLI, from the repository root:
+
+```bash
+mcp-publisher login github
+mcp-publisher publish
+```
+
 ## Development
 
 ```bash
 npm install
-npm run build     # tsc, then copy ../js into dist/js
-npm run smoke     # drives the built server over stdio and checks every tool
-npm run inspect   # MCP Inspector
+npm run build      # tsc, then copy ../js into dist/js
+npm run smoke      # drives the built server over stdio and checks every tool
+npm run smoke:http # drives the serverless entrypoint the hosted endpoint uses
+npm run inspect    # MCP Inspector
 ```
 
 `npm run build` copies the repo's `js/` provider modules into `dist/js`. That

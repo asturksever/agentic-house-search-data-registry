@@ -14,13 +14,20 @@ prevent.
 hosted endpoint is the only thing that costs money to run. The split is drawn
 where the cost is, not where the value is.
 
-| | Self-hosted (free, forever) | Hosted (if it ever launches) |
-| --- | --- | --- |
-| Transport | stdio, or `--http` on your own box | `--http` behind a gateway |
-| Tools | all five | all five |
-| Limits | none | tiered per API key |
-| Data | public site, or your own via `AHS_BASE_URL` | same, plus anything needing a key we hold |
-| Support | GitHub issues | whatever is promised in writing |
+| | Self-hosted (free, forever) | Hosted free (running today) | Hosted paid (if it ever launches) |
+| --- | --- | --- | --- |
+| Transport | stdio, or `--http` on your own box | one URL, streamable HTTP | same behind a gateway |
+| Tools | all five | all five | all five |
+| Limits | none | a courtesy rate limit | tiered per API key |
+| Auth | none | none | API key |
+| Data | public site, or your own via `AHS_BASE_URL` | same | same, plus anything needing a key we hold |
+| Support | GitHub issues | GitHub issues | whatever is promised in writing |
+
+The middle column exists because installation friction was the thing actually
+keeping people out, not price. It is unauthenticated on purpose: every source is
+public open data and the server holds no per-user state, so a sign-in step would
+protect nothing and cost a step. It is not a funnel and there is nothing behind
+it to funnel anyone into.
 
 ## What a paid tier would actually be selling
 
@@ -42,6 +49,11 @@ would sell the things that genuinely cost money or carry risk:
 
 All of it is in `src/services/access.ts`, wired into HTTP mode only in
 `src/index.ts`. Nothing else in the codebase knows tiers exist.
+
+The hosted free endpoint (`../api/mcp.mjs`) deliberately does **not** use
+`access.ts`. It has no keys and no tiers, only a best-effort per-instance
+courtesy limit, so none of the defects listed at the bottom of this file apply
+to it — and it cannot quietly grow a paid tier by having one configured.
 
 | Variable | Default | Effect |
 | --- | --- | --- |
@@ -177,7 +189,9 @@ product, which is why they are still here.
 
 ## Status
 
-Boundary in place, nothing behind it. No billing, no hosted deployment, no
-pricing. Deliberate: the free and open version is what builds the audience that
-would eventually buy anything, and it is worth more right now as proof of work
-than as revenue.
+Boundary in place, nothing behind it. There is a hosted deployment, but it is
+the free one: no billing, no keys, no pricing, no tier to upgrade to. It exists
+because "install this npm package and edit a JSON file" was losing people who
+would have used the thing. Deliberate: the free and open version is what builds
+the audience that would eventually buy anything, and it is worth more right now
+as proof of work than as revenue.

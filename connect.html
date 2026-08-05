@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connect an agent — Agentic House Search</title>
+<meta name="description" content="Add UK neighbourhood research to Claude, ChatGPT or any MCP client. One hosted URL, nothing to install, no account and no API key.">
+<meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121611" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/connect.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <a class="mark" href="index.html" aria-label="Agentic House Search — home">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path class="house" d="M5.4 14.6 16 5.9l10.6 8.7v11.3a.9.9 0 0 1-.9.9H6.3a.9.9 0 0 1-.9-.9V14.6Z"/>
+        <g class="bars"><path d="M11.4 22.6v-2.9"/><path d="M16 22.6v-5.3"/><path d="M20.6 22.6v-7.7"/></g>
+      </svg>
+      <span>Agentic House Search</span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="registry.html">Data registry</a>
+      <a href="report.html">Postcode report</a>
+      <a href="connect.html" class="here">Connect an agent</a>
+    </nav>
+  </div>
+
+  <header class="connect-head">
+    <p class="label">Model Context Protocol</p>
+    <h1>Connect an agent</h1>
+    <p class="sub">Give any AI assistant the same research this site does — eleven
+      categories for a UK postcode, side-by-side comparison, and the 45-dataset
+      registry underneath. No account, no API key, nothing to install.</p>
+  </header>
+
+  <section class="steps" aria-label="How to connect">
+    <ol>
+      <li>
+        <span class="n">1</span>
+        <div class="step-body">
+          <p class="step-title">Copy this URL</p>
+          <div class="urlbox">
+            <input id="endpoint" type="text" readonly aria-label="MCP server URL"
+                   value="https://agentic-house-search.vercel.app/mcp">
+            <button id="copy" class="btn" type="button" data-label="Copy">Copy</button>
+          </div>
+        </div>
+      </li>
+      <li>
+        <span class="n">2</span>
+        <div class="step-body">
+          <p class="step-title">Paste it into your AI</p>
+          <p class="step-note">Claude, ChatGPT, Cursor, or any other MCP client — wherever it
+            asks for a connector, custom integration or server URL.</p>
+        </div>
+      </li>
+      <li>
+        <span class="n">3</span>
+        <div class="step-body">
+          <p class="step-title">Ask it about a postcode</p>
+          <p class="step-note">“What's SW11 1AA like?” · “Compare M1 1AE and EH1 1YZ on broadband
+            and transport” · “Where would I get EPC data for a property?”</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2>Or add it in one command</h2>
+      <p class="intro">Same server, same numbers, if you would rather not click through a
+        settings pane. Nothing here needs the repository cloned.</p>
+    </div>
+
+    <div class="clients">
+      <article class="client">
+        <p class="label">Claude Code</p>
+        <pre data-copy>claude mcp add --transport http agentic-house-search https://agentic-house-search.vercel.app/mcp</pre>
+      </article>
+
+      <article class="client">
+        <p class="label">Cursor · VS Code</p>
+        <p class="client-note">One click, then confirm in the editor.</p>
+        <p class="deeplinks">
+          <a class="btn ghost" href="cursor://anysphere.cursor-deeplink/mcp/install?name=agentic-house-search&amp;config=eyJ1cmwiOiJodHRwczovL2FnZW50aWMtaG91c2Utc2VhcmNoLnZlcmNlbC5hcHAvbWNwIn0=">Add to Cursor</a>
+          <a class="btn ghost" href="https://insiders.vscode.dev/redirect/mcp/install?name=agentic-house-search&amp;config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fagentic-house-search.vercel.app%2Fmcp%22%7D">Add to VS Code</a>
+        </p>
+      </article>
+
+      <article class="client">
+        <p class="label">Any client that edits JSON</p>
+        <pre data-copy>{
+  "mcpServers": {
+    "agentic-house-search": {
+      "type": "http",
+      "url": "https://agentic-house-search.vercel.app/mcp"
+    }
+  }
+}</pre>
+      </article>
+
+      <article class="client">
+        <p class="label">Run it yourself</p>
+        <p class="client-note">No rate limit, no dependency on this deployment. Needs Node 20+.</p>
+        <pre data-copy>npx -y agentic-house-search</pre>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2>What your agent gets</h2>
+      <p class="intro">Five tools, running the same provider modules as the report on this
+        site — so a threshold or a caveat is written once and both surfaces agree.</p>
+    </div>
+    <table class="tools">
+      <thead><tr><th>Tool</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>postcode_report</code></td><td>Eleven categories for one postcode — demographics, crime, deprivation, prices, broadband, mobile, noise, transport, amenities, schools, environment.</td></tr>
+        <tr><td><code>postcode_lookup</code></td><td>Geography only: coordinates, local authority, ward, constituency, LSOA/MSOA/OA, police force, deprivation rank. One fast call.</td></tr>
+        <tr><td><code>postcode_compare</code></td><td>Two to five postcodes side by side, with the comparability caveats attached.</td></tr>
+        <tr><td><code>postcode_search_datasets</code></td><td>Search the 45-dataset registry by text or category.</td></tr>
+        <tr><td><code>postcode_get_dataset</code></td><td>One registry entry in full: endpoint, API docs, licence, coverage, cadence.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2>Before you trust a number it gives you</h2>
+    </div>
+    <div class="caveats">
+      <p><b>Geography varies by source.</b> A census figure describes an LSOA — a neighbourhood
+        of roughly 1,500 people, not an address. Ofcom mobile coverage describes an entire local
+        authority, so two postcodes in the same authority always show identical mobile figures.
+        Every figure states what it actually describes; a summary should carry that through.</p>
+      <p><b>Coverage is uneven, and said so.</b> Census tables are England &amp; Wales;
+        <code>data.police.uk</code> excludes Scotland; planning, Defra noise and the school
+        register are England-only. Those come back as <code>out_of_coverage</code> with a reason
+        and a link to the devolved equivalent — never as a zero.</p>
+      <p><b>Deprivation ranks are not comparable across nations,</b> and
+        <code>postcode_compare</code> will not let a cross-nation comparison pass without saying so.</p>
+      <p class="notsurvey">This is not a survey, a valuation or a conveyancing search.</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2>The small print on the hosted endpoint</h2>
+    </div>
+    <div class="caveats">
+      <p><b>Free and unauthenticated, because there is nothing to protect.</b> Every source is
+        public government open data. There is no account, no key and no per-user state, so a
+        sign-in step would guard nothing and cost you a step.</p>
+      <p><b>There is a courtesy rate limit</b> — roughly 120 requests an hour — and it exists to
+        keep one runaway agent from burning the fair-use budget of the government APIs
+        underneath, not to nudge you anywhere. Running the server yourself has no limit at all
+        and stays that way. Check the endpoint is up at
+        <a href="https://agentic-house-search.vercel.app/health" target="_blank" rel="noopener"><code>/health</code> ↗</a>.</p>
+      <p><b>Keep the attribution attached.</b> The compilation is CC0; the data is not. It is
+        public sector information under the Open Government Licence v3.0, plus OS and Royal Mail
+        rights in the postcode geography, and OpenStreetMap contributors (ODbL) for amenities.
+        Every response carries this, and it should survive being summarised.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Source, issues and the full server documentation are on
+      <a class="src" href="https://github.com/asturksever/agentic-house-search-data-registry/blob/main/mcp/README.md" target="_blank" rel="noopener">GitHub ↗</a>,
+      and the package is on
+      <a class="src" href="https://www.npmjs.com/package/agentic-house-search" target="_blank" rel="noopener">npm ↗</a>.</p>
+  </footer>
+
+</div>
+<script>
+  // Copy-to-clipboard for the endpoint and for every code block that asks for it.
+  // Progressive: without the Clipboard API the URL is still a selectable input
+  // and the blocks are still readable text, which is the whole page's job.
+  const flash = (button, original) => {
+    button.textContent = 'Copied';
+    button.classList.add('copied');
+    setTimeout(() => { button.textContent = original; button.classList.remove('copied'); }, 1600);
+  };
+
+  const write = async text => {
+    if (!navigator.clipboard) return false;
+    try { await navigator.clipboard.writeText(text); return true; } catch { return false; }
+  };
+
+  const endpoint = document.getElementById('endpoint');
+  const copy = document.getElementById('copy');
+  copy.addEventListener('click', async () => {
+    endpoint.select();
+    if (await write(endpoint.value)) flash(copy, 'Copy');
+  });
+
+  for (const block of document.querySelectorAll('pre[data-copy]')) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'copy-mini';
+    button.textContent = 'Copy';
+    button.addEventListener('click', async () => {
+      if (await write(block.firstChild.textContent)) flash(button, 'Copy');
+    });
+    block.append(button);
+  }
+</script>
+<script type="module" src="js/topbar.js"></script>
+</body>
+</html>

@@ -54,3 +54,9 @@ jobs:
       - name: Smoke-test every tool
         working-directory: mcp
         run: npm run smoke
+
+      # The hosted endpoint is what most people connect to, so it gets the same
+      # treatment: this drives api/mcp.mjs, not just the stdio path.
+      - name: Smoke-test the hosted endpoint's entrypoint
+        working-directory: mcp
+        run: npm run smoke:http

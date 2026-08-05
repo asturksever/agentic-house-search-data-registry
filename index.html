@@ -12,6 +12,7 @@
   // dropping someone who wanted one dataset onto a hero they did not ask for.
   if (location.hash.startsWith('#src-')) location.replace('registry.html' + location.hash);
 </script>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/base.css">
 <link rel="stylesheet" href="assets/landing.css">
 </head>
@@ -19,11 +20,18 @@
 <div class="wrap">
 
   <div class="topbar">
-    <a class="mark" href="index.html">Agentic House Search</a>
+    <a class="mark" href="index.html" aria-label="Agentic House Search — home">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path class="house" d="M5.4 14.6 16 5.9l10.6 8.7v11.3a.9.9 0 0 1-.9.9H6.3a.9.9 0 0 1-.9-.9V14.6Z"/>
+        <g class="bars"><path d="M11.4 22.6v-2.9"/><path d="M16 22.6v-5.3"/><path d="M20.6 22.6v-7.7"/></g>
+      </svg>
+      <span>Agentic House Search</span>
+    </a>
     <nav class="nav">
       <a href="index.html" class="here">Home</a>
       <a href="registry.html">Data registry</a>
       <a href="report.html">Postcode report</a>
+      <a href="connect.html">Connect an agent</a>
     </nav>
   </div>
 
@@ -100,8 +108,9 @@
         <p class="label">For agents</p>
         <h3>MCP server</h3>
         <p>The same research, agent-shaped. Five tools covering reports, lookups,
-           side-by-side postcode comparison and the registry itself. Published on npm.</p>
-        <a class="go" href="https://www.npmjs.com/package/agentic-house-search" target="_blank" rel="noopener">agentic-house-search on npm ↗</a>
+           side-by-side postcode comparison and the registry itself. One URL to paste,
+           nothing to install.</p>
+        <a class="go" href="connect.html">Connect an agent →</a>
       </article>
       <article class="way">
         <p class="label">The raw material</p>
@@ -160,15 +169,16 @@
     <div class="use">
       <div>
         <h3 class="label">Add the MCP server to a client</h3>
-        <p>Any MCP-speaking agent can run the same research.</p>
-<pre>{
-  "mcpServers": {
-    "agentic-house-search": {
-      "command": "npx",
-      "args": ["-y", "agentic-house-search"]
-    }
-  }
-}</pre>
+        <p>Any MCP-speaking agent can run the same research. Paste this URL into
+           Claude, ChatGPT or anything else that speaks the protocol — no account,
+           no key, nothing to install.</p>
+<pre>https://agentic-house-search.vercel.app/mcp</pre>
+        <p style="margin-top:10px">Or in one command, if you would rather not click
+           through a settings pane:</p>
+<pre>claude mcp add --transport http \
+agentic-house-search \
+https://agentic-house-search.vercel.app/mcp</pre>
+        <p style="margin-top:10px"><a class="go" href="connect.html">Per-client instructions →</a></p>
       </div>
       <div>
         <h3 class="label">Take the registry itself</h3>
@@ -198,5 +208,6 @@ python3 -m http.server 8000</pre>
 
 </div>
 <script type="module" src="js/landing.js"></script>
+<script type="module" src="js/topbar.js"></script>
 </body>
 </html>

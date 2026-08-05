@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Same mark as the topbar lockup. Colours are baked rather than inherited,
+       because a favicon has no page to take currentColor from; the stone square
+       keeps it legible on both light and dark browser chrome. -->
+  <rect width="32" height="32" rx="6" fill="#f4f1ea"/>
+  <path d="M5.4 14.6 16 5.9l10.6 8.7v11.3a.9.9 0 0 1-.9.9H6.3a.9.9 0 0 1-.9-.9V14.6Z"
+        fill="none" stroke="#1c2b24" stroke-width="2.1" stroke-linejoin="round"/>
+  <g stroke="#a67c2e" stroke-width="2.3" stroke-linecap="round">
+    <path d="M11.4 22.6v-2.9"/>
+    <path d="M16 22.6v-5.3"/>
+    <path d="M20.6 22.6v-7.7"/>
+  </g>
+</svg>
