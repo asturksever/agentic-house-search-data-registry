@@ -9,9 +9,9 @@ Three ways in, all free and open:
 
 | | |
 | --- | --- |
-| **[Postcode report](https://asturksever.github.io/agentic-house-search-data-registry/report.html)** | The website. Type a postcode, read the answer. |
-| **[MCP server](mcp/README.md)** | Paste one URL into Claude, ChatGPT or any MCP client and your agent can do the same. [Connect an agent →](https://asturksever.github.io/agentic-house-search-data-registry/connect.html) |
-| **[Dataset registry](https://asturksever.github.io/agentic-house-search-data-registry/registry.html)** | The 45 open datasets underneath, with endpoints, licences and coverage. |
+| **[Postcode report](https://agentic-house-search.vercel.app/report.html)** | The website. Type a postcode, read the answer. |
+| **[MCP server](mcp/README.md)** | Paste one URL into Claude, ChatGPT or any MCP client and your agent can do the same. [Connect an agent →](https://agentic-house-search.vercel.app/connect.html) |
+| **[Dataset registry](https://agentic-house-search.vercel.app/registry.html)** | The 45 open datasets underneath, with endpoints, licences and coverage. |
 
 ## Why this exists
 
@@ -110,7 +110,7 @@ Or add it in one command:
 claude mcp add --transport http agentic-house-search https://agentic-house-search.vercel.app/mcp
 ```
 
-The [connect page](https://asturksever.github.io/agentic-house-search-data-registry/connect.html)
+The [connect page](https://agentic-house-search.vercel.app/connect.html)
 has the same thing with a copy button and per-client instructions. The hosted
 endpoint is free, needs no account or key, and carries a courtesy rate limit
 that exists to protect the government APIs underneath — not to sell you

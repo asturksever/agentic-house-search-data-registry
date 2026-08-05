@@ -5,7 +5,7 @@ the government's own open data says about that place — demographics, crime,
 deprivation, prices, fibre, 5G, noise, transport, amenities, schools and
 planning constraints — plus a searchable registry of the 45 datasets underneath.
 
-It is the [postcode report](https://asturksever.github.io/agentic-house-search-data-registry/report.html)
+It is the [postcode report](https://agentic-house-search.vercel.app/report.html)
 with an agent-shaped front door. Both run the *same* provider modules, so a
 threshold or a caveat is written once and shows up in both.
 
@@ -18,7 +18,7 @@ asks for a connector, custom integration or MCP server URL:
 https://agentic-house-search.vercel.app/mcp
 ```
 
-The [connect page](https://asturksever.github.io/agentic-house-search-data-registry/connect.html)
+The [connect page](https://agentic-house-search.vercel.app/connect.html)
 has a copy button, one-click buttons for Cursor and VS Code, and the same
 instructions per client.
 
@@ -121,7 +121,7 @@ This is not a survey, a valuation or a conveyancing search.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `AHS_BASE_URL` | the published Pages site | Where to read the registry and pack extracts. Point it at `http://localhost:8000/` to develop against a local checkout. |
+| `AHS_BASE_URL` | the published site | Where to read the registry and pack extracts. Point it at `http://localhost:8000/` to develop against a local checkout. |
 | `AHS_JS_ROOT` | unset | Where the shared `js/` provider modules live. A hint, not a requirement: with it unset the server checks next to the compiled output (the published package) and then `./js` (a bundled function), and fails with the list of directories it tried. Only set it when neither is right. |
 | `ALLOWED_ORIGINS` | none | Comma-separated `Origin` allowlist for HTTP mode. Requests carrying any other `Origin` are rejected with 403. |
 | `API_KEYS` | unset | HTTP mode only. Comma-separated `key` or `key:pro`. Unset means every caller is anonymous and nothing is rejected. |
@@ -142,8 +142,9 @@ to be true before any of it were sold.
 
 `https://agentic-house-search.vercel.app/mcp` is this same package, built from
 this repository, deployed as a serverless function
-([`api/mcp.mjs`](../api/mcp.mjs), [`vercel.json`](../vercel.json)). It exists so
-that connecting takes a URL rather than a config file. It is unauthenticated
+([`api/mcp.mjs`](../api/mcp.mjs), [`vercel.json`](../vercel.json)) on the same
+host as the website, which `scripts/stage-site.mjs` assembles into `public/` at
+build time. It exists so that connecting takes a URL rather than a config file. It is unauthenticated
 because there is nothing to authenticate: every source is public open data and
 the server holds no per-user state.
 
@@ -155,7 +156,7 @@ your own `--http` cannot drift apart in how they speak the protocol.
 **This repository is the deployment.** Vercel builds from GitHub: connect the
 repo once, and every push to `main` redeploys the endpoint. There is no CLI step,
 no separate copy of the source and nothing to remember to run — the same push
-that updates the Pages site updates the MCP server, and a revert reverts both.
+that updates the website updates the MCP server, and a revert reverts both.
 
 Setup is once, in Vercel's *Add New → Project → Import Git Repository*. Two
 things matter:

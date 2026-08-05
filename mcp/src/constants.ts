@@ -7,7 +7,7 @@ export const SERVER_VERSION = '0.1.1';
  * (`python3 -m http.server 8000`) to develop against uncommitted packs.
  */
 export const DEFAULT_BASE_URL =
-  'https://asturksever.github.io/agentic-house-search-data-registry/';
+  'https://agentic-house-search.vercel.app/';
 
 /** Cap on a single tool response, so a wide comparison cannot flood a context. */
 export const CHARACTER_LIMIT = 25_000;

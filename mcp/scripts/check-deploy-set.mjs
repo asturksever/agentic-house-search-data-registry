@@ -19,14 +19,31 @@ import { fileURLToPath } from 'node:url';
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const git = (args, cwd) => execFileSync('git', args, { cwd, encoding: 'utf8' });
 
-// Everything the Vercel build command and the function need at runtime. A path
-// under one of these prefixes must survive the upload.
-const REQUIRED_PREFIXES = ['api/', 'js/', 'mcp/src/', 'mcp/scripts/', 'public/'];
+// Everything the Vercel build command, the staged website and the function need.
+// A path under one of these prefixes must survive the upload.
+const REQUIRED_PREFIXES = [
+  'api/', // the serverless endpoint
+  'js/', // the provider layer, loaded by the server and by the browser
+  'mcp/src/',
+  'mcp/scripts/',
+  'scripts/', // stage-site.mjs
+  'assets/', // the website, which this host now serves too
+  'data/',
+  'packs/',
+];
 const REQUIRED_FILES = [
   'vercel.json',
   'mcp/package.json',
   'mcp/package-lock.json',
   'mcp/tsconfig.json',
+  // Named explicitly rather than left to the scripts/ prefix: a prefix rule only
+  // says "nothing here is excluded", which is silently true of a directory whose
+  // one file was never committed.
+  'scripts/stage-site.mjs',
+  'index.html',
+  'registry.html',
+  'report.html',
+  'connect.html',
 ];
 
 const tracked = git(['ls-files'], repoRoot).split('\n').filter(Boolean);
@@ -57,14 +74,16 @@ try {
 
 const missingRequired = REQUIRED_FILES.filter(path => !tracked.includes(path));
 
-// The build does not create the output directory — it is committed. Vercel
-// fails the deployment outright when it is missing, after a build that
-// otherwise succeeded, so check it here rather than discovering it there.
-const { outputDirectory } = JSON.parse(readFileSync(join(repoRoot, 'vercel.json'), 'utf8'));
-if (outputDirectory && !needed.some(path => path.startsWith(`${outputDirectory}/`))) {
+// The output directory is built by stage-site.mjs rather than committed, so
+// there is nothing tracked to look for under it. What has to be true instead is
+// that the build actually runs the staging step — without it Vercel fails with
+// "No Output Directory found" after a build that otherwise succeeded, which is
+// how this deployment failed once already.
+const vercel = JSON.parse(readFileSync(join(repoRoot, 'vercel.json'), 'utf8'));
+if (vercel.outputDirectory && !vercel.buildCommand?.includes('stage-site')) {
   process.stderr.write(
-    `vercel.json#outputDirectory is "${outputDirectory}", but no tracked file survives ` +
-      'the upload under it — Vercel will fail with "No Output Directory found".\n',
+    `vercel.json#outputDirectory is "${vercel.outputDirectory}", but buildCommand never ` +
+      'runs stage-site.mjs, so nothing will create it.\n',
   );
   process.exit(1);
 }

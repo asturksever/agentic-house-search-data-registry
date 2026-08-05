@@ -1,19 +1,16 @@
-# The Vercel deployment is the MCP endpoint and nothing else — the website is on
-# GitHub Pages, and `/` here redirects there. So everything the website needs and
-# the function does not stays out of the upload.
+# One host serves everything now: the website and the MCP endpoint. So the site's
+# own files travel too — scripts/stage-site.mjs assembles them into public/,
+# which is what actually gets served.
 #
 # Every pattern is anchored with a leading slash. Without one, gitignore syntax
 # matches at any depth: a bare `tools/` also excludes `mcp/src/tools/`, which
 # deploys a server whose own tool modules are missing and fails in `tsc` rather
 # than anywhere useful. CI checks out from git and never reads this file, so it
-# cannot catch that for you.
-/packs/
-/data/
-/assets/
-/tools/
+# cannot catch that for you — `npm --prefix mcp run check:deploy` can.
 /.github/
 /.cache/
-/*.html
+/tools/
 /mcp/node_modules/
 /mcp/dist/
 /mcp/*.tgz
+/public/

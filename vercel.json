@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm --prefix mcp ci && npm --prefix mcp run build",
+  "buildCommand": "npm --prefix mcp ci && npm --prefix mcp run build && node scripts/stage-site.mjs",
   "installCommand": "echo 'deps install in buildCommand'",
   "outputDirectory": "public",
   "env": {

@@ -6,3 +6,6 @@ __pycache__/
 node_modules/
 mcp/dist/
 mcp/*.tgz
+
+# Built by scripts/stage-site.mjs at deploy time.
+/public/

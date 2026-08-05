@@ -102,6 +102,6 @@ try {
     <p class="pub">This page counts its figures from <code>data/registry.json</code>, which browsers
     block on <code>file://</code> URLs. Serve the folder over HTTP instead —
     <code>python3 -m http.server 8000</code> — or use the
-    <a class="src" href="https://asturksever.github.io/agentic-house-search-data-registry/">published site</a>.</p>
+    <a class="src" href="https://agentic-house-search.vercel.app/">published site</a>.</p>
   </div>`;
 }
