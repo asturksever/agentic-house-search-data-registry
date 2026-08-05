@@ -122,7 +122,7 @@ This is not a survey, a valuation or a conveyancing search.
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `AHS_BASE_URL` | the published Pages site | Where to read the registry and pack extracts. Point it at `http://localhost:8000/` to develop against a local checkout. |
-| `AHS_JS_ROOT` | next to the compiled output | Where the shared `js/` provider modules live. Only needed when a bundler has moved the compiled server away from them, which is what the hosted deployment does. |
+| `AHS_JS_ROOT` | unset | Where the shared `js/` provider modules live. A hint, not a requirement: with it unset the server checks next to the compiled output (the published package) and then `./js` (a bundled function), and fails with the list of directories it tried. Only set it when neither is right. |
 | `ALLOWED_ORIGINS` | none | Comma-separated `Origin` allowlist for HTTP mode. Requests carrying any other `Origin` are rejected with 403. |
 | `API_KEYS` | unset | HTTP mode only. Comma-separated `key` or `key:pro`. Unset means every caller is anonymous and nothing is rejected. |
 | `RATE_LIMIT_ANONYMOUS` | 60/hour | HTTP mode only. A courtesy limit so one runaway agent cannot burn the upstream fair-use budgets. |

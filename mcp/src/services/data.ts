@@ -4,6 +4,7 @@
 // build time, so it is loaded dynamically and typed here rather than compiled.
 // Everything downstream — tools, formatting — works against those types.
 
+import { existsSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve as resolvePath } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pathToFileURL } from 'node:url';
@@ -13,15 +14,51 @@ import type { CategoryResult, Place, Provider, Registry } from '../types.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
-// Normally the provider modules sit beside the compiled output, where the build
-// copied them. A bundler that inlines this file — the serverless deployment does
-// — moves it away from them, so AHS_JS_ROOT names the directory instead. Read at
-// call time rather than at import time, because a host that sets it in its own
-// module body would otherwise lose the race against this one.
-function jsRoot(): string {
+// Where the provider modules are.
+//
+// Normally they sit beside the compiled output, where the build copied them. A
+// bundler that inlines this file — the serverless deployment does — moves it
+// away from them, and exactly where it lands is the deployment's business, not
+// something worth encoding as a guess here.
+//
+// So this checks candidates rather than trusting one. AHS_JS_ROOT wins when set,
+// but it is a hint and not a requirement, because a platform that quietly drops
+// an environment variable should not take the server down with it. Resolution
+// happens at call time: a host that sets the variable in its own module body
+// would otherwise lose the race against this one.
+function candidates(): string[] {
   const override = process.env.AHS_JS_ROOT;
-  if (!override) return join(here, '..', 'js');
-  return isAbsolute(override) ? override : resolvePath(process.cwd(), override);
+  return [
+    ...(override ? [isAbsolute(override) ? override : resolvePath(process.cwd(), override)] : []),
+    join(here, '..', 'js'), // the published package: dist/js, beside dist/services
+    resolvePath(process.cwd(), 'js'), // a bundled function with the repo's js/ uploaded
+  ];
+}
+
+export function jsRoot(): string {
+  const tried = candidates();
+  // config.js is the module every other one goes through, so its presence is
+  // what makes a directory the provider layer rather than merely existing.
+  const found = tried.find(dir => existsSync(join(dir, 'config.js')));
+  if (!found) {
+    throw new Error(
+      `Could not find the provider modules. Looked for config.js in: ${tried.join(', ')}. ` +
+        'Set AHS_JS_ROOT to the directory holding them.',
+    );
+  }
+  return found;
+}
+
+/** Where a host looked, for a health check that has to explain a failure. */
+export function describeResolution() {
+  const tried = candidates();
+  return {
+    tried,
+    resolved: tried.find(dir => existsSync(join(dir, 'config.js'))) ?? null,
+    override: process.env.AHS_JS_ROOT ?? null,
+    moduleDir: here,
+    cwd: process.cwd(),
+  };
 }
 
 const load = (relative: string) =>

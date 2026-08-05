@@ -97,9 +97,13 @@ export default async function handler(req, res) {
     await init(process.env.AHS_BASE_URL);
     await handleMcpRequest(req, res, req.body);
   } catch (err) {
-    process.stderr.write(`request failed: ${err?.message}\n`);
+    process.stderr.write(`request failed: ${err?.stack ?? err}\n`);
     if (!res.headersSent) {
-      jsonRpcError(res, 500, -32603, 'Internal server error');
+      // The message goes to the caller rather than only to the platform log.
+      // There is nothing to leak — no keys, no user data, only public open data —
+      // and the alternative is a client that can report nothing but "internal
+      // error" to someone who cannot see the logs.
+      jsonRpcError(res, 500, -32603, `Internal server error: ${err?.message ?? err}`);
     }
   }
 }
