@@ -10,7 +10,7 @@ Three ways in, all free and open:
 | | |
 | --- | --- |
 | **[Postcode report](https://asturksever.github.io/agentic-house-search-data-registry/report.html)** | The website. Type a postcode, read the answer. |
-| **[MCP server](mcp/README.md)** | `npx agentic-house-search`, so any AI agent can do the same. On [npm](https://www.npmjs.com/package/agentic-house-search). |
+| **[MCP server](mcp/README.md)** | Paste one URL into Claude, ChatGPT or any MCP client and your agent can do the same. [Connect an agent →](https://asturksever.github.io/agentic-house-search-data-registry/connect.html) |
 | **[Dataset registry](https://asturksever.github.io/agentic-house-search-data-registry/registry.html)** | The 45 open datasets underneath, with endpoints, licences and coverage. |
 
 ## Why this exists
@@ -97,21 +97,33 @@ Protocol — five tools: a full postcode report, a fast geography lookup, a
 side-by-side comparison of up to five postcodes, and search/fetch over the
 registry itself.
 
-Published on npm as
-[`agentic-house-search`](https://www.npmjs.com/package/agentic-house-search):
+There is nothing to install. Paste this into your client's connector or custom
+integration field:
 
-```json
-{
-  "mcpServers": {
-    "agentic-house-search": { "command": "npx", "args": ["-y", "agentic-house-search"] }
-  }
-}
+```
+https://agentic-house-search.vercel.app/mcp
+```
+
+Or add it in one command:
+
+```bash
+claude mcp add --transport http agentic-house-search https://agentic-house-search.vercel.app/mcp
+```
+
+The [connect page](https://asturksever.github.io/agentic-house-search-data-registry/connect.html)
+has the same thing with a copy button and per-client instructions. The hosted
+endpoint is free, needs no account or key, and carries a courtesy rate limit
+that exists to protect the government APIs underneath — not to sell you
+anything. Running it yourself has no limit:
+
+```bash
+npx -y agentic-house-search          # stdio, published on npm
+npx -y agentic-house-search --http   # your own streamable HTTP endpoint
 ```
 
 It runs the **same** provider modules as `report.html` rather than a
 reimplementation, so a threshold, a coverage gate or a caveat is written once
-and both surfaces agree. stdio by default; `--http` for a streamable HTTP
-endpoint. See [`mcp/README.md`](mcp/README.md).
+and both surfaces agree. See [`mcp/README.md`](mcp/README.md).
 
 ## Schema
 

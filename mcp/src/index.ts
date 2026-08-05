@@ -14,10 +14,10 @@
  */
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import express from 'express';
 
 import { DEFAULT_BASE_URL, SERVER_NAME, SERVER_VERSION } from './constants.js';
+import { handleMcpRequest } from './http.js';
 import { authenticate, describeAccess, loadAccessConfig, rateLimit } from './services/access.js';
 import { init } from './services/data.js';
 import { createServer } from './server.js';
@@ -96,17 +96,11 @@ async function runHttp({ port, host }: Options) {
   app.use('/mcp', authenticate(access), rateLimit(access));
 
   // Stateless: a fresh server and transport per request, so there is no session
-  // state to lose and the process scales horizontally without stickiness.
+  // state to lose and the process scales horizontally without stickiness. Shared
+  // with the hosted function so both speak the same protocol.
   app.post('/mcp', async (req, res) => {
-    const server = createServer();
-    const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
-    res.on('close', () => {
-      void transport.close();
-      void server.close();
-    });
     try {
-      await server.connect(transport);
-      await transport.handleRequest(req, res, req.body);
+      await handleMcpRequest(req, res, req.body);
     } catch (err) {
       log(`request failed: ${(err as Error).message}`);
       if (!res.headersSent) {

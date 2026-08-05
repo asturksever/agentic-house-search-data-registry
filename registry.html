@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agentic House Search Data Registry</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/base.css">
 <style>
   .qs{margin:0;padding-left:20px;color:var(--muted);font-size:14.5px;line-height:1.6;max-width:82ch}
@@ -14,11 +15,18 @@
 <body>
 <div class="wrap">
   <div class="topbar">
-    <a class="mark" href="index.html">Agentic House Search</a>
+    <a class="mark" href="index.html" aria-label="Agentic House Search — home">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path class="house" d="M5.4 14.6 16 5.9l10.6 8.7v11.3a.9.9 0 0 1-.9.9H6.3a.9.9 0 0 1-.9-.9V14.6Z"/>
+        <g class="bars"><path d="M11.4 22.6v-2.9"/><path d="M16 22.6v-5.3"/><path d="M20.6 22.6v-7.7"/></g>
+      </svg>
+      <span>Agentic House Search</span>
+    </a>
     <nav class="nav">
       <a href="index.html">Home</a>
       <a href="registry.html" class="here">Data registry</a>
       <a href="report.html">Postcode report</a>
+      <a href="connect.html">Connect an agent</a>
     </nav>
   </div>
   <h1>Data registry</h1>
@@ -96,5 +104,6 @@ try {
     <a class="src" href="https://asturksever.github.io/agentic-house-search-data-registry/">published site</a>.</p></div>`;
 }
 </script>
+<script type="module" src="js/topbar.js"></script>
 </body>
 </html>

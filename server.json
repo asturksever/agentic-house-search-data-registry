@@ -1,0 +1,28 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.asturksever/agentic-house-search",
+  "title": "Agentic House Search",
+  "description": "UK neighbourhood research from government open data: postcode reports, comparisons, 45 datasets.",
+  "version": "0.1.1",
+  "websiteUrl": "https://asturksever.github.io/agentic-house-search-data-registry/connect.html",
+  "repository": {
+    "url": "https://github.com/asturksever/agentic-house-search-data-registry",
+    "source": "github",
+    "id": "1320276763",
+    "subfolder": "mcp"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://agentic-house-search.vercel.app/mcp"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "agentic-house-search",
+      "version": "0.1.1",
+      "transport": { "type": "stdio" }
+    }
+  ]
+}

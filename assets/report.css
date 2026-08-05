@@ -66,11 +66,15 @@
 .t-watch .glyph,.pill.t-watch .glyph{color:var(--tone-watch)}
 .t-poor .glyph,.pill.t-poor .glyph{color:var(--tone-poor)}
 
-.anchors{position:sticky;top:0;z-index:2;background:var(--bg);padding:8px 0;margin:0 0 12px;
+/* Docks under the masthead rather than fighting it for top:0. --topbar-h is
+   measured by js/topbar.js; z-index stays below the bar's so the strip slides
+   under it rather than over. */
+.anchors{position:sticky;top:var(--topbar-h);z-index:2;background:var(--bg);padding:8px 0;margin:0 0 12px;
   display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
 
 /* ----------------------------------------------------------------- cards */
-.cat{scroll-margin-top:64px}
+/* Both sticky bars have to clear the heading an anchor jumps to. */
+.cat{scroll-margin-top:calc(var(--topbar-h) + 62px)}
 .cat h2{font-size:19px;margin:0}
 .cat .head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 4px}
 .cat .scope{color:var(--muted);font-size:13.5px;margin:0 0 10px}
