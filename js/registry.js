@@ -33,5 +33,5 @@ export function groupOf(source) {
 
 // Deep link to a source's card on the catalogue page.
 export function registryAnchor(id) {
-  return `index.html#src-${id}`;
+  return `registry.html#src-${id}`;
 }

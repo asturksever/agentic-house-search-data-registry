@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic House Search Data Registry</title>
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .qs{margin:0;padding-left:20px;color:var(--muted);font-size:14.5px;line-height:1.6;max-width:82ch}
+  .qs li{margin:4px 0}
+  .card:target{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="mark" href="index.html">Agentic House Search</a>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="registry.html" class="here">Data registry</a>
+      <a href="report.html">Postcode report</a>
+    </nav>
+  </div>
+  <h1>Data registry</h1>
+  <p class="sub">Publicly available UK open datasets and machine-readable APIs for agentic house and neighbourhood search — crime, demographics, affluence, property prices, noise, transport, amenities, schools and environment. Each entry lists the dataset home, the API endpoint, licence, update cadence, and the questions the data can answer. Compiled 2 Aug 2026.</p>
+  <div class="toolbar">
+    <input id="q" type="search" placeholder="Search datasets, publishers, APIs, questions…">
+  </div>
+  <div class="filters" id="filters"></div>
+  <p class="count" id="count"></p>
+  <div id="list"></div>
+  <footer>Sources are © their respective publishers — ONS, Home Office/Police, HM Land Registry, Defra, Environment Agency, DfT, TfL, DfE, Ofsted, FSA, NHS England, Ofcom, GLA and OpenStreetMap contributors — mostly under the Open Government Licence v3. "Extras" entries are adjacent open datasets commonly used alongside these.</footer>
+</div>
+<script type="module">
+import { loadRegistry, GROUPS, groupOf } from './js/registry.js';
+
+const fEl = document.getElementById('filters');
+const listEl = document.getElementById('list');
+const countEl = document.getElementById('count');
+// The landing page's category index links straight to a filtered catalogue, so
+// the group is readable from the URL. Anything unrecognised falls back to All
+// rather than rendering an empty list.
+const wanted = new URLSearchParams(location.search).get('group');
+let DATA = null, activeGroup = GROUPS.includes(wanted) ? wanted : 'All', query = '';
+
+function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+function render(){
+  const items = DATA.sources.filter(s => {
+    if (activeGroup !== 'All' && groupOf(s) !== activeGroup) return false;
+    if (!query) return true;
+    const blob = (s.dataset+' '+s.publisher+' '+s.category+' '+s.api+' '+s.link+' '+s.questions.join(' ')).toLowerCase();
+    return blob.includes(query);
+  });
+  countEl.textContent = `${items.length} of ${DATA.sources.length} datasets`;
+  listEl.innerHTML = items.map(s => `
+    <div class="card" id="src-${esc(s.id)}">
+      <div class="chips"><span class="chip cat">${esc(s.category)}</span>
+        <span class="chip">${esc(s.licence)}</span><span class="chip">Updated: ${esc(s.update_frequency)}</span><span class="chip">${esc(s.coverage)}</span></div>
+      <h2>${esc(s.dataset)}</h2>
+      <p class="pub">${esc(s.publisher)}</p>
+      <div class="mono"><b>API&nbsp;·&nbsp;</b>${esc(s.api)}</div>
+      <div class="links">
+        <a href="${esc(s.link)}" target="_blank" rel="noopener">↗ Dataset home</a>
+        <a href="${esc(s.api_docs)}" target="_blank" rel="noopener">↗ API docs</a>
+      </div>
+      <p class="qhead">Questions this answers</p>
+      <ul class="qs">${s.questions.map(q => `<li>${esc(q)}</li>`).join('')}</ul>
+    </div>`).join('');
+  // A deep link from the report page (registry.html#src-xyz) must still land on the
+  // right card after this first async render.
+  if (location.hash) document.querySelector(location.hash)?.scrollIntoView();
+}
+
+GROUPS.forEach(g => {
+  const b = document.createElement('button');
+  b.textContent = g;
+  if (g === activeGroup) b.classList.add('active');
+  b.onclick = () => {
+    activeGroup = g;
+    document.querySelectorAll('.filters button').forEach(x => x.classList.toggle('active', x === b));
+    render();
+  };
+  fEl.appendChild(b);
+});
+document.getElementById('q').addEventListener('input', e => { query = e.target.value.toLowerCase(); render(); });
+
+try {
+  DATA = await loadRegistry();
+  render();
+} catch (err) {
+  listEl.innerHTML = `<div class="card"><h2>Could not load the registry</h2>
+    <p class="pub err">${esc(err.message)}</p>
+    <p class="pub">This page fetches <code>data/registry.json</code>, which browsers block on <code>file://</code> URLs.
+    Serve the folder over HTTP instead — <code>python3 -m http.server 8000</code> — or use the
+    <a class="src" href="https://asturksever.github.io/agentic-house-search-data-registry/">published site</a>.</p></div>`;
+}
+</script>
+</body>
+</html>

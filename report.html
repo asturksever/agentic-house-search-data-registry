@@ -11,6 +11,7 @@
   script-src 'self';
   style-src 'self';
   img-src 'self' data:;
+  font-src 'self';
   connect-src 'self'
     https://api.postcodes.io
     https://data.police.uk
@@ -28,11 +29,15 @@
 </head>
 <body>
 <div class="wrap">
+  <div class="topbar">
+    <a class="mark" href="index.html">Agentic House Search</a>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="registry.html">Data registry</a>
+      <a href="report.html" class="here">Postcode report</a>
+    </nav>
+  </div>
   <h1>Postcode report</h1>
-  <nav class="nav">
-    <a href="index.html">Data registry</a>
-    <a href="report.html" class="here">Postcode report</a>
-  </nav>
   <p class="sub">What the datasets in this registry actually say about one postcode. Everything below is fetched live from the publishers' own APIs in your browser, or read from the pre-built extracts in this repo — there is no server in between.</p>
 
   <form class="searchrow" id="form">

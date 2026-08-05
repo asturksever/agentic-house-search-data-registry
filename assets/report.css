@@ -6,28 +6,36 @@
    Red-amber-green cannot be told apart by hue alone under common colour
    vision deficiencies, so every use pairs the colour with a distinct glyph
    shape AND the band word — colour is the third channel here, never the only
-   one, and numbers stay in ink rather than wearing the status colour. */
+   one, and numbers stay in ink rather than wearing the status colour.
+   The site's brand green (--accent) is a deep, blue-leaning forest; --tone-good
+   is deliberately a brighter, yellower grass green, because a "good" tile that
+   matches the brand colour reads as branding rather than as a reading. The
+   softs are warm tints to sit on stone rather than the old blue-greys. */
 :root{
-  --tone-good:#0a7d32; --tone-neutral:#5b6575; --tone-watch:#8a5a00; --tone-poor:#c62f2f;
-  --tone-good-soft:#e8f5ec; --tone-neutral-soft:#eef1f5;
-  --tone-watch-soft:#fbf2e3; --tone-poor-soft:#fdeaea;
+  --tone-good:#0a7d32; --tone-neutral:#5f665c; --tone-watch:#8a5a00; --tone-poor:#a33030;
+  --tone-good-soft:#e4efe3; --tone-neutral-soft:#eeeae0;
+  --tone-watch-soft:#f7eeda; --tone-poor-soft:#f8e5e0;
 }
 @media (prefers-color-scheme: dark){
   :root{
-    --tone-good:#5fd39a; --tone-neutral:#9aa5b5; --tone-watch:#e8a933; --tone-poor:#f5827c;
-    --tone-good-soft:#12301f; --tone-neutral-soft:#222c44;
-    --tone-watch-soft:#332510; --tone-poor-soft:#3a1c1c;
+    /* Dark mode inverts the brand accent to a pale sage, which lands close to a
+       muted "good" green — a good tile then reads as branding. This step is kept
+       markedly more saturated than the accent so the two stay tellable apart;
+       luminance alone cannot separate them once both are light. */
+    --tone-good:#4ddb84; --tone-neutral:#9aa196; --tone-watch:#e2ab4a; --tone-poor:#f08d84;
+    --tone-good-soft:#152b1c; --tone-neutral-soft:#232b21;
+    --tone-watch-soft:#2f2512; --tone-poor-soft:#331a17;
   }
 }
 
 .searchrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 10px}
 .searchrow input{max-width:280px;text-transform:uppercase}
-.hint{color:var(--muted);font-size:13px;margin:0 0 18px}
+.hint{color:var(--muted);font-size:14px;margin:0 0 18px}
 .hint a{color:var(--accent);text-decoration:none;cursor:pointer}
 
-.place{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:0 0 16px}
-.place h2{font-size:20px;margin:0 0 4px}
-.place .meta{color:var(--muted);font-size:13.5px;margin:0}
+.place{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:18px 20px;margin:0 0 16px}
+.place h2{font-size:22px;margin:0 0 4px}
+.place .meta{color:var(--muted);font-size:14px;margin:0}
 
 /* ---------------------------------------------------------- summary tiles */
 /* One tile per category: the headline figure, and its status as shape + word
@@ -37,14 +45,14 @@
    good or bad rather than to every tile equally. */
 .tile{display:block;text-decoration:none;color:inherit;background:var(--card);
   border:1px solid var(--line);border-left:3px solid var(--line);
-  border-radius:12px;padding:11px 13px}
+  border-radius:6px;padding:12px 14px}
 .tile:hover{border-color:var(--accent);border-left-color:var(--accent)}
-.tile .cat-name{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.05em;
+.tile .cat-name{display:block;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;
   color:var(--muted);font-weight:700;margin:0 0 5px}
-.tile .figure{display:block;font-size:19px;font-weight:650;font-variant-numeric:tabular-nums;
+.tile .figure{display:block;font-size:21px;font-weight:650;font-variant-numeric:tabular-nums;
   line-height:1.2;margin:0 0 4px}
-.tile .figure.small{font-size:15px;font-weight:600}
-.tile .status{font-size:12.5px;color:var(--muted)}
+.tile .figure.small{font-size:16px;font-weight:600}
+.tile .status{font-size:13.5px;color:var(--muted)}
 .tile.t-good{border-left-color:var(--tone-good)}
 .tile.t-watch{border-left-color:var(--tone-watch)}
 .tile.t-poor{border-left-color:var(--tone-poor)}
@@ -63,13 +71,13 @@
 
 /* ----------------------------------------------------------------- cards */
 .cat{scroll-margin-top:64px}
-.cat h2{font-size:17px;margin:0}
+.cat h2{font-size:19px;margin:0}
 .cat .head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 4px}
-.cat .scope{color:var(--muted);font-size:12.5px;margin:0 0 10px}
+.cat .scope{color:var(--muted);font-size:13.5px;margin:0 0 10px}
 .narr{margin:0 0 14px}
 
 .badge{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;
-  border-radius:6px;padding:2px 7px;background:var(--chip);color:var(--muted)}
+  border-radius:3px;padding:3px 8px;background:var(--chip);color:var(--muted)}
 .badge.live{background:var(--accent-soft);color:var(--accent)}
 .badge.unavailable,.badge.out_of_coverage{color:var(--muted)}
 .badge.error{color:var(--bad)}
@@ -78,14 +86,14 @@
 .fact{display:grid;grid-template-columns:1fr auto;gap:2px 16px;align-items:baseline;
   padding:11px 0;border-top:1px solid var(--line)}
 .fact:first-of-type{border-top:0}
-.fact .flabel{font-size:14px}
-.fact .fvalue{font-size:17px;font-weight:650;font-variant-numeric:tabular-nums;
+.fact .flabel{font-size:15px}
+.fact .fvalue{font-size:18px;font-weight:650;font-variant-numeric:tabular-nums;
   white-space:nowrap;text-align:right}
-.fact .fvalue.long{font-size:14px;font-weight:600;white-space:normal;max-width:22ch}
-.fact .fmeta{grid-column:1;color:var(--muted);font-size:12.5px}
+.fact .fvalue.long{font-size:15px;font-weight:600;white-space:normal;max-width:22ch}
+.fact .fmeta{grid-column:1;color:var(--muted);font-size:13.5px}
 .fact .fband{grid-column:2;text-align:right}
 
-.pill{display:inline-block;font-size:12px;border-radius:999px;padding:2px 9px;
+.pill{display:inline-block;font-size:13px;border-radius:999px;padding:2px 9px;
   background:var(--tone-neutral-soft);color:var(--ink);white-space:normal}
 .pill.t-good{background:var(--tone-good-soft)}
 .pill.t-watch{background:var(--tone-watch-soft)}
@@ -102,10 +110,10 @@
 .fact.has-meter{padding-bottom:14px}
 
 details.notes{margin:12px 0 0}
-details.notes summary{cursor:pointer;color:var(--muted);font-size:13px}
-details.notes p{color:var(--muted);font-size:13px;margin:8px 0 0}
+details.notes summary{cursor:pointer;color:var(--muted);font-size:14px}
+details.notes p{color:var(--muted);font-size:14px;margin:8px 0 0}
 
-.srcline{color:var(--muted);font-size:12.5px;margin:12px 0 0;border-top:1px solid var(--line);padding-top:8px}
+.srcline{color:var(--muted);font-size:13.5px;margin:12px 0 0;border-top:1px solid var(--line);padding-top:8px}
 .srcline a{color:var(--accent);text-decoration:none}
 .srcline + .srcline{border-top:0;padding-top:2px}
 
@@ -114,14 +122,16 @@ details.notes p{color:var(--muted);font-size:13px;margin:8px 0 0}
 .skeleton .line.short{width:40%}
 @keyframes pulse{0%,100%{opacity:.55}50%{opacity:1}}
 
-.ai{border:1px dashed var(--line);border-radius:12px;padding:14px 16px;margin:0 0 16px}
-.ai h3{margin:0 0 6px;font-size:15px}
-.ai .warn{color:var(--tone-watch);font-size:13px}
+.ai{border:1px dashed var(--line);border-radius:6px;padding:16px 18px;margin:0 0 16px}
+.ai h3{margin:0 0 6px;font-size:16.5px}
+.ai .warn{color:var(--tone-watch);font-size:14px}
 .ai textarea{width:100%;min-height:120px;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
-.progress{color:var(--muted);font-size:13px;margin:0 0 12px}
+.progress{color:var(--muted);font-size:14px;margin:0 0 12px}
 
 @media (max-width:520px){
-  body{padding:20px 14px 60px}
+  /* Gutters live on .wrap now, not body — setting them here again doubled the
+     side margins on this page only. */
+  .wrap{padding:0 16px 60px}
   .searchrow input{max-width:none}
   /* Eleven wrapped pills eat half the screen; scroll them sideways instead. */
   .anchors{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
