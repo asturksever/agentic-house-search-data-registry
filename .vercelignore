@@ -2,16 +2,18 @@
 # GitHub Pages, and `/` here redirects there. So everything the website needs and
 # the function does not stays out of the upload.
 #
-# Written as an exclude list rather than `*` plus exceptions: gitignore syntax
-# cannot re-include a file whose name still matches a broad earlier pattern, and
-# an over-eager `*` here means a function that deploys without its providers.
-packs/
-data/
-assets/
-tools/
-.github/
-.cache/
-*.html
-mcp/node_modules/
-mcp/dist/
-mcp/*.tgz
+# Every pattern is anchored with a leading slash. Without one, gitignore syntax
+# matches at any depth: a bare `tools/` also excludes `mcp/src/tools/`, which
+# deploys a server whose own tool modules are missing and fails in `tsc` rather
+# than anywhere useful. CI checks out from git and never reads this file, so it
+# cannot catch that for you.
+/packs/
+/data/
+/assets/
+/tools/
+/.github/
+/.cache/
+/*.html
+/mcp/node_modules/
+/mcp/dist/
+/mcp/*.tgz

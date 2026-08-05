@@ -15,8 +15,9 @@ const source = join(repoRoot, 'js');
 const target = join(here, '..', 'dist', 'js');
 
 // The browser-only half of js/ has no business in a server bundle: report.js
-// touches the DOM on import and ai.js talks to the Anthropic API.
-const BROWSER_ONLY = new Set(['report.js', 'ai.js']);
+// and topbar.js touch the DOM at import time and ai.js talks to the Anthropic
+// API. registry.js stays — the server loads it for the dataset tools.
+const BROWSER_ONLY = new Set(['report.js', 'ai.js', 'topbar.js']);
 
 await rm(target, { recursive: true, force: true });
 await mkdir(target, { recursive: true });

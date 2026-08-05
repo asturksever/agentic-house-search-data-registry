@@ -43,6 +43,13 @@ jobs:
         with:
           node-version: "20"
 
+      # Before building, because this checks something the build cannot see:
+      # CI checks out from git and ignores .vercelignore, so a green build here
+      # says nothing about whether Vercel receives the files it needs.
+      - name: The deployment upload still carries every file it needs
+        working-directory: mcp
+        run: npm run check:deploy
+
       - name: Build the MCP server
         working-directory: mcp
         run: |
