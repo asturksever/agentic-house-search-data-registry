@@ -1,0 +1,102 @@
+/* Landing page only. Every colour here comes from a base.css token — no new hex
+   values — so the palette stays in one place.
+
+   The layout is a set of estate-agency particulars: a brochure cover, then
+   sections separated by hairlines rather than boxes, small-caps captions, and a
+   contents page with dotted leaders. */
+
+/* The shell and the masthead bar are shared — see base.css. */
+
+/* ---------------------------------------------------------------- masthead */
+.masthead{padding:26px 0 64px;max-width:940px}
+.kicker{margin:0 0 18px}
+/* Newsreader is a lighter, narrower face than the display serif it replaced, so
+   the masthead is set a step larger to hold the same weight on the page. */
+.masthead h1{font-size:clamp(41px,7.6vw,74px);letter-spacing:-.015em;margin:0 0 22px;max-width:15ch}
+.lede{font-size:clamp(18px,2.2vw,22px);line-height:1.5;max-width:32em;margin:0 0 30px;color:var(--ink)}
+.lede b{font-weight:600}
+.lede .after{display:block;margin-top:12px;font-size:16.5px;line-height:1.55;color:var(--muted)}
+
+.hero-form{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 14px;max-width:540px}
+.hero-form input{flex:1;min-width:200px;text-transform:uppercase;font-size:17.5px;padding:14px 16px;
+  letter-spacing:.04em}
+.hero-form .btn{padding:14px 24px;font-size:15.5px;white-space:nowrap}
+.egs{font-size:14.5px;line-height:1.6;color:var(--muted);margin:0;max-width:70ch}
+.egs a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--line)}
+.egs a:hover{border-bottom-color:var(--accent)}
+
+/* ---------------------------------------------------------------- sections */
+.sec{border-top:1px solid var(--line);padding:52px 0 8px}
+.sec h2{font-family:var(--display);font-weight:600;font-size:29px;letter-spacing:-.005em;margin:0 0 8px}
+.sec .intro{color:var(--muted);max-width:68ch;margin:0 0 28px}
+.sec-head{margin:0 0 26px}
+
+/* ------------------------------------------------------------- the two rules */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:36px;margin:0 0 12px}
+.rule-item{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
+.rule-item .no{font-family:var(--display);font-weight:600;font-size:42px;line-height:.9;
+  color:var(--rule);font-variant-numeric:tabular-nums}
+.rule-item h3{font-family:var(--display);font-weight:600;font-size:22px;line-height:1.3;margin:0 0 10px}
+.rule-item p{margin:0;color:var(--muted);font-size:15px;line-height:1.65;max-width:52ch}
+
+/* ------------------------------------------------------------ three ways in */
+.ways{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.way{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);
+  border-top:2px solid var(--rule);border-radius:0 0 6px 6px;padding:22px}
+.way h3{font-family:var(--display);font-weight:600;font-size:21px;line-height:1.3;margin:0 0 10px}
+.way p{color:var(--muted);font-size:15px;line-height:1.6;margin:0 0 18px;flex:1}
+.way .go{color:var(--accent);text-decoration:none;font-size:14.5px;font-weight:600}
+.way .go:hover{text-decoration:underline}
+
+/* -------------------------------------------------------------- figures band */
+/* Three across, two down. Six across clipped the widest figure (1,594,643) once
+   the type grew — and a 300px floor also gives the captions a readable measure
+   instead of four words per line. */
+.figures{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.fig{background:var(--card);padding:22px 20px}
+.fig .n{font-family:var(--display);font-weight:600;font-size:clamp(28px,3.6vw,37px);
+  line-height:1.05;letter-spacing:-.015em;font-variant-numeric:tabular-nums;display:block;margin:0 0 10px}
+.fig .cap{display:block;font-size:13.5px;color:var(--muted);line-height:1.5}
+
+/* ------------------------------------------------- category index (contents) */
+.idx{columns:2;column-gap:44px;margin:0;padding:0;list-style:none}
+.idx li{break-inside:avoid;margin:0 0 2px}
+.idx a{display:flex;align-items:baseline;gap:6px;text-decoration:none;color:var(--ink);
+  font-size:15.5px;padding:9px 0;border-bottom:1px solid transparent}
+.idx a:hover{color:var(--accent)}
+.idx a:hover .dots{border-bottom-color:var(--accent)}
+.idx .nm{white-space:nowrap}
+.idx .dots{flex:1;border-bottom:1px dotted var(--line);position:relative;top:-4px;min-width:20px}
+.idx .n{font-variant-numeric:tabular-nums;color:var(--muted);font-size:14.5px}
+
+/* ------------------------------------------------------------ coverage strip */
+.cov{width:100%;border-collapse:collapse;font-size:15px}
+.cov th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.13em;
+  color:var(--muted);font-weight:700;padding:0 12px 11px 0;border-bottom:1px solid var(--line);
+  white-space:nowrap}
+.cov td{padding:14px 12px 14px 0;border-bottom:1px solid var(--line);vertical-align:middle}
+.cov .nation{font-weight:600;white-space:nowrap}
+.cov .n{font-variant-numeric:tabular-nums;white-space:nowrap;width:1%}
+.cov .barcell{width:45%}
+.bar{height:8px;background:var(--chip);border-radius:0;overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--accent)}
+.cov .note{color:var(--muted);font-size:13.5px;line-height:1.6;max-width:80ch}
+
+/* -------------------------------------------------------------------- use it */
+.use{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.use h3{margin:0 0 8px}
+.use p{color:var(--muted);font-size:15px;margin:0 0 12px;line-height:1.6}
+.use pre{margin:0;background:var(--chip);border-radius:4px;padding:14px 16px;overflow-x:auto;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;
+  line-height:1.6;color:var(--ink)}
+
+/* -------------------------------------------------------------------- footer */
+.wrap footer{margin-top:52px}
+
+@media (max-width:640px){
+  .idx{columns:1}
+  .rules{gap:28px}
+  .cov .barcell{display:none}
+  .masthead{padding:40px 0 48px}
+}

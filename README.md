@@ -11,7 +11,7 @@ Three ways in, all free and open:
 | --- | --- |
 | **[Postcode report](https://asturksever.github.io/agentic-house-search-data-registry/report.html)** | The website. Type a postcode, read the answer. |
 | **[MCP server](mcp/README.md)** | `npx agentic-house-search`, so any AI agent can do the same. On [npm](https://www.npmjs.com/package/agentic-house-search). |
-| **[Dataset registry](https://asturksever.github.io/agentic-house-search-data-registry/)** | The 45 open datasets underneath, with endpoints, licences and coverage. |
+| **[Dataset registry](https://asturksever.github.io/agentic-house-search-data-registry/registry.html)** | The 45 open datasets underneath, with endpoints, licences and coverage. |
 
 ## Why this exists
 
@@ -36,7 +36,8 @@ Two rules it holds itself to, which is most of the point:
 | --- | --- |
 | [`data/registry.json`](data/registry.json) | Canonical machine-readable registry |
 | [`data/registry.csv`](data/registry.csv) | Flat table for spreadsheets (generated) |
-| [`index.html`](index.html) | Searchable catalogue of every entry |
+| [`index.html`](index.html) | Landing page — what this is, the figures, the category index |
+| [`registry.html`](registry.html) | Searchable catalogue of every entry |
 | [`report.html`](report.html) | Postcode report — pulls live values out of these sources for one postcode |
 | [`js/`](js) | The provider layer: one module per category, plus the thresholds and coverage gates. Shared by the website and the MCP server. |
 | [`mcp/`](mcp/README.md) | MCP server, published as [`agentic-house-search`](https://www.npmjs.com/package/agentic-house-search) |
@@ -361,4 +362,4 @@ This compilation is released under [CC0 1.0](LICENSE) (public domain). The under
 
 ## Contributing
 
-Missing a dataset, or spotted a dead endpoint? Open an issue or a PR editing `data/registry.json` — `index.html` and `data/registry.csv` are regenerated from it.
+Missing a dataset, or spotted a dead endpoint? Open an issue or a PR editing `data/registry.json` — `registry.html` and `data/registry.csv` are regenerated from it.

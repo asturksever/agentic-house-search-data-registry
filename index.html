@@ -3,90 +3,200 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agentic House Search Data Registry</title>
+<title>Agentic House Search — UK neighbourhood data, from the source</title>
+<meta name="description" content="Enter a UK postcode, get what government open data actually says about that neighbourhood. A registry of 45 open UK datasets, a live postcode report, and an MCP server.">
+<meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121611" media="(prefers-color-scheme: dark)">
+<script>
+  // The catalogue used to live at this URL. Forward old deep links rather than
+  // dropping someone who wanted one dataset onto a hero they did not ask for.
+  if (location.hash.startsWith('#src-')) location.replace('registry.html' + location.hash);
+</script>
 <link rel="stylesheet" href="assets/base.css">
-<style>
-  .qs{margin:0;padding-left:18px;color:var(--muted);font-size:13.5px}
-  .qs li{margin:2px 0}
-  .card:target{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-</style>
+<link rel="stylesheet" href="assets/landing.css">
 </head>
 <body>
 <div class="wrap">
-  <h1>Agentic House Search Data Registry</h1>
-  <nav class="nav">
-    <a href="index.html" class="here">Data registry</a>
-    <a href="report.html">Postcode report</a>
-  </nav>
-  <p class="sub">Publicly available UK open datasets and machine-readable APIs for agentic house and neighbourhood search — crime, demographics, affluence, property prices, noise, transport, amenities, schools and environment. Each entry lists the dataset home, the API endpoint, licence, update cadence, and the questions the data can answer. Compiled 2 Aug 2026.</p>
-  <div class="toolbar">
-    <input id="q" type="search" placeholder="Search datasets, publishers, APIs, questions…">
+
+  <div class="topbar">
+    <a class="mark" href="index.html">Agentic House Search</a>
+    <nav class="nav">
+      <a href="index.html" class="here">Home</a>
+      <a href="registry.html">Data registry</a>
+      <a href="report.html">Postcode report</a>
+    </nav>
   </div>
-  <div class="filters" id="filters"></div>
-  <p class="count" id="count"></p>
-  <div id="list"></div>
-  <footer>Sources are © their respective publishers — ONS, Home Office/Police, HM Land Registry, Defra, Environment Agency, DfT, TfL, DfE, Ofsted, FSA, NHS England, Ofcom, GLA and OpenStreetMap contributors — mostly under the Open Government Licence v3. "Extras" entries are adjacent open datasets commonly used alongside these.</footer>
-</div>
-<script type="module">
-import { loadRegistry, GROUPS, groupOf } from './js/registry.js';
 
-const fEl = document.getElementById('filters');
-const listEl = document.getElementById('list');
-const countEl = document.getElementById('count');
-let DATA = null, activeGroup = 'All', query = '';
+  <header class="masthead">
+    <p class="label kicker">UK open data · compiled 2 August 2026 · free and open</p>
+    <h1>What the data actually says about a neighbourhood</h1>
+    <hr class="rule">
+    <p class="lede">
+      Enter a UK postcode and read what government open data says about it —
+      demographics, crime, deprivation, prices, fibre, 5G, noise, transport,
+      amenities, schools and planning constraints.
+      <span class="after">Assembled live from the publishers' own APIs, in your browser. No account, no server in between.</span>
+    </p>
 
-function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+    <form class="hero-form" action="report.html" method="get">
+      <input type="text" name="postcode" inputmode="text" autocapitalize="characters"
+             autocomplete="postal-code" spellcheck="false" placeholder="e.g. SW11 1AA"
+             aria-label="UK postcode" required>
+      <button class="btn" type="submit">Get the report</button>
+    </form>
+    <p class="egs">
+      Or try <a href="report.html?postcode=SW1A1AA">SW1A 1AA</a> ·
+      <a href="report.html?postcode=M11AE">M1 1AE</a> ·
+      <a href="report.html?postcode=EH11YZ">EH1 1YZ</a> — the Edinburgh one shows you
+      what an honest coverage gap looks like.
+    </p>
+  </header>
 
-function render(){
-  const items = DATA.sources.filter(s => {
-    if (activeGroup !== 'All' && groupOf(s) !== activeGroup) return false;
-    if (!query) return true;
-    const blob = (s.dataset+' '+s.publisher+' '+s.category+' '+s.api+' '+s.link+' '+s.questions.join(' ')).toLowerCase();
-    return blob.includes(query);
-  });
-  countEl.textContent = `${items.length} of ${DATA.sources.length} datasets`;
-  listEl.innerHTML = items.map(s => `
-    <div class="card" id="src-${esc(s.id)}">
-      <div class="chips"><span class="chip cat">${esc(s.category)}</span>
-        <span class="chip">${esc(s.licence)}</span><span class="chip">Updated: ${esc(s.update_frequency)}</span><span class="chip">${esc(s.coverage)}</span></div>
-      <h2>${esc(s.dataset)}</h2>
-      <p class="pub">${esc(s.publisher)}</p>
-      <div class="mono"><b>API&nbsp;·&nbsp;</b>${esc(s.api)}</div>
-      <div class="links">
-        <a href="${esc(s.link)}" target="_blank" rel="noopener">↗ Dataset home</a>
-        <a href="${esc(s.api_docs)}" target="_blank" rel="noopener">↗ API docs</a>
+  <section class="sec">
+    <div class="sec-head">
+      <h2>Two rules, which are most of the point</h2>
+      <p class="intro">Neighbourhood data is easy to make impressive and hard to make truthful.
+        These are the constraints this project holds itself to, and they are the reason
+        to trust a number it shows you.</p>
+    </div>
+    <div class="rules">
+      <div class="rule-item">
+        <span class="no" aria-hidden="true">01</span>
+        <div>
+          <h3>It never invents a comparison</h3>
+          <p>Every band word — "above the UK average" — comes from a threshold table,
+             and always sits next to the figure it describes. No score is conjured out
+             of a weighting nobody can see.</p>
+        </div>
       </div>
-      <p class="qhead">Questions this answers</p>
-      <ul class="qs">${s.questions.map(q => `<li>${esc(q)}</li>`).join('')}</ul>
-    </div>`).join('');
-  // A deep link from the report page (index.html#src-xyz) must still land on the
-  // right card after this first async render.
-  if (location.hash) document.querySelector(location.hash)?.scrollIntoView();
-}
+      <div class="rule-item">
+        <span class="no" aria-hidden="true">02</span>
+        <div>
+          <h3>It never pretends to cover ground it does not</h3>
+          <p>A Scottish postcode is told that <code>data.police.uk</code> excludes
+             Scotland, with a link to Police Scotland, rather than being shown a zero.
+             Deprivation is computed against each nation's own index and denominator.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-GROUPS.forEach(g => {
-  const b = document.createElement('button');
-  b.textContent = g;
-  if (g === 'All') b.classList.add('active');
-  b.onclick = () => {
-    activeGroup = g;
-    document.querySelectorAll('.filters button').forEach(x => x.classList.toggle('active', x === b));
-    render();
-  };
-  fEl.appendChild(b);
-});
-document.getElementById('q').addEventListener('input', e => { query = e.target.value.toLowerCase(); render(); });
+  <section class="sec">
+    <div class="sec-head">
+      <h2>Three ways in</h2>
+      <p class="intro">The same provider layer underneath all three, so a threshold, a
+        coverage gate or a caveat is written once and every surface agrees.</p>
+    </div>
+    <div class="ways">
+      <article class="way">
+        <p class="label">The website</p>
+        <h3>Postcode report</h3>
+        <p>Type a postcode, read the answer. Eleven categories, each fetched
+           independently and appearing as it arrives, with the source and licence
+           printed against every figure.</p>
+        <a class="go" href="report.html">Run a report →</a>
+      </article>
+      <article class="way">
+        <p class="label">For agents</p>
+        <h3>MCP server</h3>
+        <p>The same research, agent-shaped. Five tools covering reports, lookups,
+           side-by-side postcode comparison and the registry itself. Published on npm.</p>
+        <a class="go" href="https://www.npmjs.com/package/agentic-house-search" target="_blank" rel="noopener">agentic-house-search on npm ↗</a>
+      </article>
+      <article class="way">
+        <p class="label">The raw material</p>
+        <h3>Dataset registry</h3>
+        <p>Every dataset underneath, with its endpoint, API docs, licence, update
+           cadence, coverage, and the questions it can actually answer. Searchable,
+           and machine-readable as JSON and CSV.</p>
+        <a class="go" href="registry.html">Browse the registry →</a>
+      </article>
+    </div>
+  </section>
 
-try {
-  DATA = await loadRegistry();
-  render();
-} catch (err) {
-  listEl.innerHTML = `<div class="card"><h2>Could not load the registry</h2>
-    <p class="pub err">${esc(err.message)}</p>
-    <p class="pub">This page fetches <code>data/registry.json</code>, which browsers block on <code>file://</code> URLs.
-    Serve the folder over HTTP instead — <code>python3 -m http.server 8000</code> — or use the
-    <a class="src" href="https://asturksever.github.io/agentic-house-search-data-registry/">published site</a>.</p></div>`;
-}
-</script>
+  <div id="live">
+    <section class="sec">
+      <div class="sec-head">
+        <h2>By the numbers</h2>
+        <p class="intro">Counted from <code>data/registry.json</code> when this page loads,
+          never typed in — so it cannot drift from what the registry actually holds.</p>
+      </div>
+      <div class="figures" id="figures"></div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head">
+        <h2>What is in it</h2>
+        <p class="intro">Fifteen categories. Each one opens the catalogue already filtered.</p>
+      </div>
+      <ul class="idx" id="idx"></ul>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head">
+        <h2>Coverage is uneven, and said so</h2>
+        <p class="intro">UK open data is not published evenly across the four nations, and
+          pretending otherwise is how neighbourhood tools end up showing a zero where they
+          mean "no data". Counted from each entry's own coverage statement.</p>
+      </div>
+      <table class="cov">
+        <thead>
+          <tr><th>Nation</th><th>Datasets covering it</th><th class="barcell"></th></tr>
+        </thead>
+        <tbody id="cov"></tbody>
+      </table>
+      <p class="cov note" style="margin-top:12px">These count datasets whose coverage statement
+        includes the nation. They are not a claim about resolution — an England-wide index at
+        LSOA level and a UK figure at local-authority level both count once here, and each
+        entry records its own granularity.</p>
+    </section>
+  </div>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2>Use it</h2>
+      <p class="intro">The compilation is CC0. Take the registry, point your own thing at it.</p>
+    </div>
+    <div class="use">
+      <div>
+        <h3 class="label">Add the MCP server to a client</h3>
+        <p>Any MCP-speaking agent can run the same research.</p>
+<pre>{
+  "mcpServers": {
+    "agentic-house-search": {
+      "command": "npx",
+      "args": ["-y", "agentic-house-search"]
+    }
+  }
+}</pre>
+      </div>
+      <div>
+        <h3 class="label">Take the registry itself</h3>
+        <p>45 entries, twelve fields each, also available as CSV.</p>
+<pre>curl -s https://asturksever.github.io/\
+agentic-house-search-data-registry/data/registry.json</pre>
+        <p style="margin-top:10px">Or run the whole site locally:</p>
+<pre>git clone https://github.com/asturksever/\
+agentic-house-search-data-registry
+cd agentic-house-search-data-registry
+python3 -m http.server 8000</pre>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Sources are © their respective publishers — ONS, Home Office/Police, HM Land Registry,
+      Defra, Environment Agency, DfT, TfL, DfE, Ofsted, FSA, NHS England, Ofcom, GLA and
+      OpenStreetMap contributors — mostly under the Open Government Licence v3. "Extras"
+      entries are adjacent open datasets commonly used alongside these.</p>
+    <p>This compilation is released under
+      <a class="src" href="https://github.com/asturksever/agentic-house-search-data-registry/blob/main/LICENSE" target="_blank" rel="noopener">CC0 1.0</a>.
+      Endpoints were verified against publisher documentation as of 2 August 2026 — government
+      APIs move, so check each entry's API docs before depending on it.
+      <a class="src" href="https://github.com/asturksever/agentic-house-search-data-registry" target="_blank" rel="noopener">Source on GitHub ↗</a></p>
+  </footer>
+
+</div>
+<script type="module" src="js/landing.js"></script>
 </body>
 </html>
