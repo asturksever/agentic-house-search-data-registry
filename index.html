@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moved — Agentic House Search</title>
+<link rel="canonical" href="https://agentic-house-search.vercel.app/">
+<!-- Everything moved to one host, so this branch exists only to forward.
+
+     GitHub Pages serves 404.html for any path it does not have, and this branch
+     has no other pages — so every old link lands here and gets forwarded to the
+     same path on the new host. That is the whole trick: one file covers URLs
+     that were shared before the move, including deep links into the registry.
+
+     Pages cannot issue an HTTP redirect, so this is a client-side one. Anything
+     that fetches data here rather than browsing — the npm package used to read
+     data/registry.json from this host — will see this page instead of JSON, and
+     should be pointed at the new host. -->
+<meta name="robots" content="noindex">
+<script>
+  // Preserve the path below the repository base, plus query and hash. A visitor
+  // who bookmarked the registry filtered to one category should land on it, not
+  // on the front page.
+  (function () {
+    var TARGET = 'https://agentic-house-search.vercel.app/';
+    var BASE = '/agentic-house-search-data-registry/';
+    var path = location.pathname;
+    var rest = path.indexOf(BASE) === 0 ? path.slice(BASE.length) : '';
+    location.replace(TARGET + rest + location.search + location.hash);
+  })();
+</script>
+<style>
+  body{margin:0;padding:56px 24px;background:#f4f1ea;color:#1c2b24;
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  @media (prefers-color-scheme:dark){body{background:#121611;color:#e9e6dd}}
+  main{max-width:44ch;margin:0 auto}
+  h1{font-family:Georgia,serif;font-weight:600;font-size:27px;line-height:1.25;margin:0 0 14px}
+  p{margin:0 0 14px}
+  a{color:#1f4d3a}
+  @media (prefers-color-scheme:dark){a{color:#8fc0a4}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Agentic House Search has moved</h1>
+  <p>The site, the dataset registry, the postcode report and the MCP endpoint are
+    now all in one place.</p>
+  <p><a href="https://agentic-house-search.vercel.app/">agentic-house-search.vercel.app</a></p>
+  <p>Redirecting you there now.</p>
+</main>
+</body>
+</html>
