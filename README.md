@@ -42,7 +42,7 @@ Two rules it holds itself to, which is most of the point:
 | [`js/`](js) | The provider layer: one module per category, plus the thresholds and coverage gates. Shared by the website and the MCP server. |
 | [`mcp/`](mcp/README.md) | MCP server, published as [`agentic-house-search`](https://www.npmjs.com/package/agentic-house-search) |
 | [`packs/`](tools/packbuild/README.md) | Pre-built extracts for the sources that publish bulk files instead of an API |
-| [`tools/`](tools) | `gen_derived.py` (regenerates the CSV and the README tables), `validate_registry.py`, `check_provider_ids.py`, `check_pages.py`, `packbuild/` |
+| [`tools/`](tools) | `gen_derived.py` (regenerates the CSV and the README tables), `validate_registry.py`, `check_provider_ids.py`, `packbuild/` |
 
 Both pages fetch `data/registry.json` at runtime, so they need to be served over
 HTTP rather than opened from disk: `python3 -m http.server 8000`, then

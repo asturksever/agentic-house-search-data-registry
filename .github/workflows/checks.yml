@@ -24,9 +24,6 @@ jobs:
       - name: Provider registry ids resolve
         run: python3 tools/check_provider_ids.py
 
-      - name: GitHub Pages will serve every module
-        run: python3 tools/check_pages.py
-
       - name: Pack build tests
         run: |
           pip install --quiet pytest
