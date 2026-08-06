@@ -100,6 +100,23 @@ check(
 
 const get = await fetch(endpoint);
 check('GET is refused, because the server is stateless', get.status === 405, String(get.status));
+check(
+  'a non-browser GET still gets the JSON-RPC error, unchanged',
+  (get.headers.get('content-type') ?? '').includes('application/json'),
+  get.headers.get('content-type') ?? '',
+);
+
+// Presentation only: people paste this URL into a browser, and a raw JSON-RPC
+// error reads as broken. The status stays 405 either way.
+const browser = await fetch(endpoint, { headers: { accept: 'text/html,application/xhtml+xml' } });
+const browserBody = await browser.text();
+check(
+  'a browser GET gets an explanation instead of a JSON-RPC error',
+  browser.status === 405 &&
+    (browser.headers.get('content-type') ?? '').includes('text/html') &&
+    browserBody.includes('MCP endpoint'),
+  `${browser.status} ${browser.headers.get('content-type')}`,
+);
 
 const preflight = await fetch(endpoint, { method: 'OPTIONS' });
 check(
