@@ -45,6 +45,29 @@ claude mcp add --transport http agentic-house-search https://agentic-house-searc
 `GET /health` says whether the endpoint is up, which is more useful than a
 client that only reports "connection failed".
 
+### Or find it by name
+
+This server is listed in the [official MCP registry](https://registry.modelcontextprotocol.io),
+so a client with registry support can add it without being given a URL at all.
+Search for `agentic-house-search`, or use the canonical name:
+
+```
+io.github.asturksever/agentic-house-search
+```
+
+Anything resolving it programmatically can read the entry straight from the
+registry API — it carries both install paths, the hosted endpoint and the npm
+package, so a client can pick whichever it supports:
+
+```bash
+curl -s "https://registry.modelcontextprotocol.io/v0/servers?search=agentic-house-search"
+```
+
+The listing's version tracks releases, so it is worth checking it against
+`/health` if a client reports something unexpected — a stale listing means the
+registry entry was not republished after a release, not that the server is
+wrong.
+
 ### Or run it yourself
 
 Free, ungated and with no dependency on the hosted deployment. Requires Node 20+.

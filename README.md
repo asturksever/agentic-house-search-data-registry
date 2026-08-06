@@ -110,6 +110,11 @@ Or add it in one command:
 claude mcp add --transport http agentic-house-search https://agentic-house-search.vercel.app/mcp
 ```
 
+Or, in a client that supports the
+[official MCP registry](https://registry.modelcontextprotocol.io), add it by
+name without a URL at all — search `agentic-house-search`, or use
+`io.github.asturksever/agentic-house-search`.
+
 The [connect page](https://agentic-house-search.vercel.app/connect.html)
 has the same thing with a copy button and per-client instructions. The hosted
 endpoint is free, needs no account or key, and carries a courtesy rate limit
