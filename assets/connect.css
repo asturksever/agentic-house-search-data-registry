@@ -68,6 +68,15 @@
 .tools td:first-child{white-space:nowrap;color:var(--ink)}
 .tools code{font-size:13.5px}
 
+/* Prose links, in the client notes and the small print. Without this they fall
+   back to the browser default — a raw blue underline, which on this palette
+   reads as an unstyled page rather than a link. Same treatment as the landing
+   page's: accent ink, hairline underneath, which firms up on hover. */
+.client-note a,
+.caveats a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--line)}
+.client-note a:hover,
+.caveats a:hover{border-bottom-color:var(--accent)}
+
 /* ---------------------------------------------------------------- caveats */
 .caveats p{color:var(--muted);font-size:15px;line-height:1.7;margin:0 0 16px;max-width:74ch}
 .caveats b{color:var(--ink);font-weight:600}
