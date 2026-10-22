@@ -14,10 +14,11 @@ const repoRoot = join(here, '..', '..');
 const source = join(repoRoot, 'js');
 const target = join(here, '..', 'dist', 'js');
 
-// The browser-only half of js/ has no business in a server bundle: report.js
-// and topbar.js touch the DOM at import time and ai.js talks to the Anthropic
-// API. registry.js stays — the server loads it for the dataset tools.
-const BROWSER_ONLY = new Set(['report.js', 'ai.js', 'topbar.js']);
+// The browser-only half of js/ has no business in a server bundle: report.js,
+// topbar.js and theme.js touch the DOM at import time, share.js drives the
+// clipboard and print dialog, and ai.js talks to the Anthropic API.
+// registry.js stays — the server loads it for the dataset tools.
+const BROWSER_ONLY = new Set(['report.js', 'ai.js', 'topbar.js', 'theme.js', 'share.js']);
 
 await rm(target, { recursive: true, force: true });
 await mkdir(target, { recursive: true });
