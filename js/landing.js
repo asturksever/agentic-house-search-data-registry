@@ -100,8 +100,8 @@ try {
     <h2>Could not load the registry</h2>
     <p class="pub err">${esc(err.message)}</p>
     <p class="pub">This page counts its figures from <code>data/registry.json</code>, which browsers
-    block on <code>file://</code> URLs. Serve the folder over HTTP instead —
-    <code>python3 -m http.server 8000</code> — or use the
+    block on <code>file://</code> URLs. Serve the folder over HTTP instead with
+    <code>python3 -m http.server 8000</code>, or use the
     <a class="src" href="https://agentic-house-search.vercel.app/">published site</a>.</p>
   </div>`;
 }

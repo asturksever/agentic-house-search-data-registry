@@ -3,188 +3,205 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agentic House Search — UK neighbourhood data, from the source</title>
+<title>Agentic House Search | UK neighbourhood data, from the source</title>
 <meta name="description" content="Enter a UK postcode, get what government open data actually says about that neighbourhood. A registry of 45 open UK datasets, a live postcode report, and an MCP server.">
-<meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#121611" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f8f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151311" media="(prefers-color-scheme: dark)">
 <script>
   // The catalogue used to live at this URL. Forward old deep links rather than
   // dropping someone who wanted one dataset onto a hero they did not ask for.
   if (location.hash.startsWith('#src-')) location.replace('registry.html' + location.hash);
 </script>
+<link rel="preload" href="assets/fonts/source-serif-4-display-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/base.css">
 <link rel="stylesheet" href="assets/landing.css">
 </head>
-<body>
-<div class="wrap">
+<body class="landing">
 
-  <div class="topbar">
-    <a class="mark" href="index.html" aria-label="Agentic House Search — home">
-      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-        <path class="house" d="M5.4 14.6 16 5.9l10.6 8.7v11.3a.9.9 0 0 1-.9.9H6.3a.9.9 0 0 1-.9-.9V14.6Z"/>
-        <g class="bars"><path d="M11.4 22.6v-2.9"/><path d="M16 22.6v-5.3"/><path d="M20.6 22.6v-7.7"/></g>
-      </svg>
-      <span>Agentic House Search</span>
-    </a>
-    <nav class="nav">
-      <a href="index.html" class="here">Home</a>
-      <a href="registry.html">Data registry</a>
-      <a href="report.html">Postcode report</a>
-      <a href="connect.html">Connect an agent</a>
-    </nav>
-  </div>
+<div class="topbar solo">
+  <a class="mark" href="index.html" aria-label="Agentic House Search home">
+    <svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <path class="house" d="M5.4 14.6 16 5.9l10.6 8.7v11.3a.9.9 0 0 1-.9.9H6.3a.9.9 0 0 1-.9-.9V14.6Z"/>
+      <g class="bars"><path d="M11.4 22.6v-2.9"/><path d="M16 22.6v-5.3"/><path d="M20.6 22.6v-7.7"/></g>
+    </svg>
+    <span>Agentic House Search</span>
+  </a>
+  <nav class="nav">
+    <a href="index.html" class="here">Home</a>
+    <a href="registry.html">Data registry</a>
+    <a href="report.html">Postcode report</a>
+    <a href="connect.html">Connect an agent</a>
+  </nav>
+</div>
 
+<main class="wrap">
+
+  <!-- Hero: headline, one sentence, one control. Everything else the old hero
+       carried (compile date, example postcodes, the no-server note) now lives
+       where it does work: the date on the frame, the Edinburgh example on the
+       coverage rule it illustrates, the no-server note on the report card. -->
   <header class="masthead">
-    <p class="label kicker">UK open data · compiled 2 August 2026 · free and open</p>
     <h1>What the data actually says about a neighbourhood</h1>
-    <hr class="rule">
-    <p class="lede">
-      Enter a UK postcode and read what government open data says about it —
-      demographics, crime, deprivation, prices, fibre, 5G, noise, transport,
-      amenities, schools and planning constraints.
-      <span class="after">Assembled live from the publishers' own APIs, in your browser. No account, no server in between.</span>
-    </p>
+    <p class="lede">Enter a UK postcode and read what government open data says about
+      crime, prices, schools, transport and more.</p>
 
     <form class="hero-form" action="report.html" method="get">
-      <input type="text" name="postcode" inputmode="text" autocapitalize="characters"
-             autocomplete="postal-code" spellcheck="false" placeholder="e.g. SW11 1AA"
-             aria-label="UK postcode" required>
-      <button class="btn" type="submit">Get the report</button>
+      <label class="field-label" for="hero-postcode">UK postcode</label>
+      <div class="hero-pill">
+        <input id="hero-postcode" type="text" name="postcode" inputmode="text" autocapitalize="characters"
+               autocomplete="postal-code" spellcheck="false" placeholder="e.g. SW11 1AA" required>
+        <button class="btn" type="submit">Get the report</button>
+      </div>
     </form>
-    <p class="egs">
-      Or try <a href="report.html?postcode=SW1A1AA">SW1A 1AA</a> ·
-      <a href="report.html?postcode=M11AE">M1 1AE</a> ·
-      <a href="report.html?postcode=EH11YZ">EH1 1YZ</a> — the Edinburgh one shows you
-      what an honest coverage gap looks like.
-    </p>
   </header>
 
-  <section class="sec">
-    <div class="sec-head">
-      <h2>Two rules, which are most of the point</h2>
-      <p class="intro">Neighbourhood data is easy to make impressive and hard to make truthful.
-        These are the constraints this project holds itself to, and they are the reason
-        to trust a number it shows you.</p>
-    </div>
-    <div class="rules">
-      <div class="rule-item">
-        <span class="no" aria-hidden="true">01</span>
-        <div>
-          <h3>It never invents a comparison</h3>
-          <p>Every band word — "above the UK average" — comes from a threshold table,
-             and always sits next to the figure it describes. No score is conjured out
-             of a weighting nobody can see.</p>
+  <!-- The product shot. Everything inside the window is counted from
+       data/registry.json by js/landing.js when the page loads: real data in
+       app chrome, not a picture of it. -->
+  <div id="live">
+    <figure class="frame" aria-label="The registry, counted live" aria-describedby="frame-cap">
+      <div class="frame-side">
+        <div class="frame-brand">
+          <svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+            <path class="house" d="M5.4 14.6 16 5.9l10.6 8.7v11.3a.9.9 0 0 1-.9.9H6.3a.9.9 0 0 1-.9-.9V14.6Z"/>
+            <g class="bars"><path d="M11.4 22.6v-2.9"/><path d="M16 22.6v-5.3"/><path d="M20.6 22.6v-7.7"/></g>
+          </svg>
+          <span>Registry</span>
         </div>
+        <p class="frame-k">Categories</p>
+        <ul class="idx" id="idx"></ul>
       </div>
-      <div class="rule-item">
-        <span class="no" aria-hidden="true">02</span>
-        <div>
-          <h3>It never pretends to cover ground it does not</h3>
-          <p>A Scottish postcode is told that <code>data.police.uk</code> excludes
-             Scotland, with a link to Police Scotland, rather than being shown a zero.
-             Deprivation is computed against each nation's own index and denominator.</p>
+      <div class="frame-main">
+        <div class="frame-head">
+          <h2>By the numbers</h2>
+          <span class="date-chip">Compiled 2 August 2026</span>
         </div>
+        <div class="figures" id="figures"></div>
+
+        <div class="frame-head">
+          <h2>Coverage by nation</h2>
+        </div>
+        <table class="cov">
+          <thead class="vh">
+            <tr><th>Nation</th><th>Datasets covering it</th><th>Share</th></tr>
+          </thead>
+          <tbody id="cov"></tbody>
+        </table>
       </div>
-    </div>
-  </section>
+    </figure>
+    <p class="frame-cap" id="frame-cap">
+      Counted from <code>data/registry.json</code> when this page loads, never typed in, so it
+      cannot drift from what the registry holds. Each category opens the catalogue already
+      filtered. Coverage counts datasets whose own coverage statement includes the nation; it
+      is not a claim about resolution.
+    </p>
+  </div>
 
   <section class="sec">
     <div class="sec-head">
       <h2>Three ways in</h2>
-      <p class="intro">The same provider layer underneath all three, so a threshold, a
-        coverage gate or a caveat is written once and every surface agrees.</p>
+      <p class="intro">One provider layer underneath all three, so a threshold, a coverage gate
+        or a caveat is written once and every surface agrees.</p>
     </div>
+    <!-- Bento: the website is the lead, so it takes the tall cell. The
+         screenshots are the real pages, captured in both colour schemes. -->
     <div class="ways">
-      <article class="way">
-        <p class="label">The website</p>
-        <h3>Postcode report</h3>
-        <p>Type a postcode, read the answer. Eleven categories, each fetched
-           independently and appearing as it arrives, with the source and licence
-           printed against every figure.</p>
-        <a class="go" href="report.html">Run a report →</a>
-      </article>
-      <article class="way">
-        <p class="label">For agents</p>
-        <h3>MCP server</h3>
-        <p>The same research, agent-shaped. Five tools covering reports, lookups,
-           side-by-side postcode comparison and the registry itself. One URL to paste,
-           nothing to install.</p>
-        <a class="go" href="connect.html">Connect an agent →</a>
-      </article>
-      <article class="way">
-        <p class="label">The raw material</p>
-        <h3>Dataset registry</h3>
-        <p>Every dataset underneath, with its endpoint, API docs, licence, update
-           cadence, coverage, and the questions it can actually answer. Searchable,
-           and machine-readable as JSON and CSV.</p>
-        <a class="go" href="registry.html">Browse the registry →</a>
-      </article>
+      <a class="way way-lead" href="report.html">
+        <div class="shot shot-apricot">
+          <picture>
+            <source srcset="assets/shots/report-dark.jpg" media="(prefers-color-scheme: dark)">
+            <img src="assets/shots/report-light.jpg" width="1100" height="810" loading="lazy"
+                 alt="The postcode report for SW1A 1AA, Westminster: eleven category tiles with a figure and a band word each.">
+          </picture>
+        </div>
+        <div class="way-body">
+          <h3>Postcode report</h3>
+          <p>Type a postcode, read the answer. Eleven categories arrive independently, fetched
+             in your browser, with the source and licence printed against every figure.</p>
+          <span class="go">Get the report <span aria-hidden="true">→</span></span>
+        </div>
+      </a>
+      <a class="way" href="connect.html">
+        <div class="shot shot-blush">
+          <picture>
+            <source srcset="assets/shots/connect-dark.jpg" media="(prefers-color-scheme: dark)">
+            <img src="assets/shots/connect-light.jpg" width="1100" height="579" loading="lazy"
+                 alt="The connect page: copy the MCP URL, paste it into your AI, ask it about a postcode.">
+          </picture>
+        </div>
+        <div class="way-body">
+          <h3>MCP server</h3>
+          <p>The same research for AI agents. Five tools, one URL to paste, nothing to install.</p>
+          <span class="go">Connect an agent <span aria-hidden="true">→</span></span>
+        </div>
+      </a>
+      <a class="way" href="registry.html">
+        <div class="shot shot-stone">
+          <picture>
+            <source srcset="assets/shots/registry-dark.jpg" media="(prefers-color-scheme: dark)">
+            <img src="assets/shots/registry-light.jpg" width="1100" height="810" loading="lazy"
+                 alt="The data registry: category filters above the entry for street-level crime from data.police.uk.">
+          </picture>
+        </div>
+        <div class="way-body">
+          <h3>Dataset registry</h3>
+          <p>Every source underneath, with its endpoint, licence, cadence, coverage and the
+             questions it can answer. Also as JSON and CSV.</p>
+          <span class="go">Browse the registry <span aria-hidden="true">→</span></span>
+        </div>
+      </a>
     </div>
   </section>
 
-  <div id="live">
-    <section class="sec">
-      <div class="sec-head">
-        <h2>By the numbers</h2>
-        <p class="intro">Counted from <code>data/registry.json</code> when this page loads,
-          never typed in — so it cannot drift from what the registry actually holds.</p>
-      </div>
-      <div class="figures" id="figures"></div>
-    </section>
-
-    <section class="sec">
-      <div class="sec-head">
-        <h2>What is in it</h2>
-        <p class="intro">Fifteen categories. Each one opens the catalogue already filtered.</p>
-      </div>
-      <ul class="idx" id="idx"></ul>
-    </section>
-
-    <section class="sec">
-      <div class="sec-head">
-        <h2>Coverage is uneven, and said so</h2>
-        <p class="intro">UK open data is not published evenly across the four nations, and
-          pretending otherwise is how neighbourhood tools end up showing a zero where they
-          mean "no data". Counted from each entry's own coverage statement.</p>
-      </div>
-      <table class="cov">
-        <thead>
-          <tr><th>Nation</th><th>Datasets covering it</th><th class="barcell"></th></tr>
-        </thead>
-        <tbody id="cov"></tbody>
-      </table>
-      <p class="cov note" style="margin-top:12px">These count datasets whose coverage statement
-        includes the nation. They are not a claim about resolution — an England-wide index at
-        LSOA level and a UK figure at local-authority level both count once here, and each
-        entry records its own granularity.</p>
-    </section>
-  </div>
-
-  <section class="sec">
+  <section class="sec split">
     <div class="sec-head">
+      <h2>Two rules, which are most of the point</h2>
+      <p class="intro">Neighbourhood data is easy to make impressive and hard to make truthful.
+        These are the constraints behind every number shown here.</p>
+    </div>
+    <ol class="steps-rail">
+      <li>
+        <span class="no">01</span>
+        <h3>It never invents a comparison</h3>
+        <p>Every band word, like "above the UK average", comes from a threshold table and sits
+           next to the figure it describes. No score is conjured out of a weighting nobody
+           can see.</p>
+      </li>
+      <li>
+        <span class="no">02</span>
+        <h3>It never pretends to cover ground it does not</h3>
+        <p>A Scottish postcode is told that <code>data.police.uk</code> excludes Scotland, with
+           a link to Police Scotland, rather than being shown a zero. Deprivation is computed
+           against each nation's own index.
+           <a href="report.html?postcode=EH11YZ">See it for EH1 1YZ</a>.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="cta">
+    <div class="cta-head">
       <h2>Use it</h2>
-      <p class="intro">The compilation is CC0. Take the registry, point your own thing at it.</p>
+      <p class="intro">The compilation is CC0. Take the registry and point your own thing at it.</p>
     </div>
     <div class="use">
-      <div>
-        <h3 class="label">Add the MCP server to a client</h3>
-        <p>Any MCP-speaking agent can run the same research. Paste this URL into
-           Claude, ChatGPT or anything else that speaks the protocol — no account,
-           no key, nothing to install.</p>
+      <div class="panel">
+        <h3>Add the MCP server to a client</h3>
+        <p>Paste this URL into Claude, ChatGPT or any other MCP client. No account, no key,
+           nothing to install.</p>
 <pre>https://agentic-house-search.vercel.app/mcp</pre>
-        <p style="margin-top:10px">Or in one command, if you would rather not click
-           through a settings pane:</p>
+        <p>Or in one command:</p>
 <pre>claude mcp add --transport http \
 agentic-house-search \
 https://agentic-house-search.vercel.app/mcp</pre>
-        <p style="margin-top:10px"><a class="go" href="connect.html">Per-client instructions →</a></p>
+        <a class="go" href="connect.html">Connect an agent <span aria-hidden="true">→</span></a>
       </div>
-      <div>
-        <h3 class="label">Take the registry itself</h3>
-        <p>45 entries, twelve fields each, also available as CSV.</p>
+      <div class="panel">
+        <h3>Take the registry itself</h3>
+        <p>Every entry, twelve fields each, also available as CSV.</p>
 <pre>curl -s https://agentic-house-search.vercel.app/data/registry.json</pre>
-        <p style="margin-top:10px">Or run the whole site locally:</p>
+        <p>Or run the whole site locally:</p>
 <pre>git clone https://github.com/asturksever/\
 agentic-house-search-data-registry
 cd agentic-house-search-data-registry
@@ -194,18 +211,40 @@ python3 -m http.server 8000</pre>
   </section>
 
   <footer>
-    <p>Sources are © their respective publishers — ONS, Home Office/Police, HM Land Registry,
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <path class="house" d="M5.4 14.6 16 5.9l10.6 8.7v11.3a.9.9 0 0 1-.9.9H6.3a.9.9 0 0 1-.9-.9V14.6Z"/>
+          <g class="bars"><path d="M11.4 22.6v-2.9"/><path d="M16 22.6v-5.3"/><path d="M20.6 22.6v-7.7"/></g>
+        </svg>
+        <span>Agentic House Search</span>
+      </div>
+      <nav class="foot-nav" aria-label="Use">
+        <p class="foot-k">Use</p>
+        <a href="report.html">Postcode report</a>
+        <a href="connect.html">Connect an agent</a>
+      </nav>
+      <nav class="foot-nav" aria-label="Data">
+        <p class="foot-k">Data</p>
+        <a href="registry.html">Data registry</a>
+        <a href="data/registry.json">registry.json</a>
+      </nav>
+      <nav class="foot-nav" aria-label="Project">
+        <p class="foot-k">Project</p>
+        <a href="https://github.com/asturksever/agentic-house-search-data-registry" target="_blank" rel="noopener">Source on GitHub ↗</a>
+        <a href="https://github.com/asturksever/agentic-house-search-data-registry/blob/main/LICENSE" target="_blank" rel="noopener">CC0 1.0</a>
+      </nav>
+    </div>
+    <p>Sources are © their respective publishers: ONS, Home Office/Police, HM Land Registry,
       Defra, Environment Agency, DfT, TfL, DfE, Ofsted, FSA, NHS England, Ofcom, GLA and
-      OpenStreetMap contributors — mostly under the Open Government Licence v3. "Extras"
+      OpenStreetMap contributors. Most are under the Open Government Licence v3. "Extras"
       entries are adjacent open datasets commonly used alongside these.</p>
-    <p>This compilation is released under
-      <a class="src" href="https://github.com/asturksever/agentic-house-search-data-registry/blob/main/LICENSE" target="_blank" rel="noopener">CC0 1.0</a>.
-      Endpoints were verified against publisher documentation as of 2 August 2026 — government
-      APIs move, so check each entry's API docs before depending on it.
-      <a class="src" href="https://github.com/asturksever/agentic-house-search-data-registry" target="_blank" rel="noopener">Source on GitHub ↗</a></p>
+    <p>This compilation is released under CC0 1.0. Endpoints were verified against publisher
+      documentation as of 2 August 2026. Government APIs move, so check each entry's API docs
+      before depending on it.</p>
   </footer>
 
-</div>
+</main>
 <script type="module" src="js/landing.js"></script>
 <script type="module" src="js/topbar.js"></script>
 </body>

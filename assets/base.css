@@ -1,111 +1,157 @@
 /* Shared shell: colour system, typography and the primitives (card, chip, pill
-   button, links, footer) used by index.html, registry.html and report.html.
+   button, links, footer) used by every page.
 
-   The look borrows from UK estate-agency particulars rather than property
-   portals: deep green ink on warm stone, a serif for display type only, hairline
-   rules, and small-caps captions. It lands here rather than in a per-page
-   stylesheet because the registry's own fields are already brochure captions —
-   licence, coverage, update cadence — so all three pages want the same set. */
+   The look is quiet product-studio rather than property portal: warm-neutral
+   ink on white, a display serif at regular weight for headings only, a neutral
+   grotesque for everything else, pill controls, and one brand colour: orange.
+   Orange is spent on actions, links and the brand mark. The report's status
+   scale (green, amber, red) is a separate reserved set, and orange is kept off
+   anything that could be read as a rating.
 
-/* Newsreader for display, Inter for everything else. Both are Latin subsets,
-   variable across weight, and self-hosted, so no page makes a third-party
-   request and no CSP needs a Google host allowed.
+   Shape scale: anything you press is a pill; outer containers are 16px;
+   anything nested inside one is 12px. */
 
-   Newsreader over a higher-contrast display serif because most of the serif on
-   these pages is not the 68px masthead — it is 19px dataset titles, 45 of them
-   down the catalogue. Newsreader is drawn for screen text and holds up there;
-   its opsz axis is pinned to 36 so the shipped file is 58 KB, not 132 KB.
-   Inter replaces the system stack for the same reason in the other direction:
-   the small print here runs 12.5–15px, and Inter's letterfit at those sizes is
-   where the readability actually comes from. */
+/* Source Serif 4 for display, Geist for everything else. Both are Latin
+   subsets and self-hosted, so no page makes a third-party request and the
+   report's CSP (font-src 'self') holds.
+
+   Source Serif 4 ships an optical-size axis; this file is instanced at opsz 48,
+   its display cut, with weight left variable from 300 to 600. Pinning the axis
+   keeps the sharp, high-contrast headline drawing and halves the file (47 KB
+   against 122 KB for the full axis). The display cut is still comfortable at
+   the 22px of the dataset titles, the smallest serif on the site. Geist is
+   variable across weight, so the 600-650 the report tiles ask for is real
+   rather than synthesised. */
 @font-face{
-  font-family:'Newsreader';
+  font-family:'Source Serif 4';
   font-style:normal;
-  font-weight:500 700;
+  font-weight:300 600;
   font-display:swap;
-  src:url('fonts/newsreader-latin.woff2') format('woff2');
+  src:url('fonts/source-serif-4-display-latin.woff2') format('woff2');
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,
     U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face{
-  font-family:'Inter';
+  font-family:'Geist';
   font-style:normal;
-  font-weight:400 700;
+  font-weight:100 900;
   font-display:swap;
-  src:url('fonts/inter-latin.woff2') format('woff2');
+  src:url('fonts/geist-latin.woff2') format('woff2');
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,
     U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 
 :root{
-  --bg:#f4f1ea; --card:#fffdf9; --ink:#1c2b24; --muted:#5f665c; --line:#ddd6c9;
-  --accent:#1f4d3a; --accent-soft:#e6ece7; --chip:#eeeae0;
-  /* Brass. Decorative only — 3.4:1 on stone, so it rules and borders but never
-     sets text. */
-  --rule:#a67c2e;
-  /* Text laid on --accent. A literal #fff works in light mode but fails badly on
-     the pale dark-mode accent, so the pairing is a token rather than a constant. */
+  --bg:#ffffff; --card:#ffffff; --sunk:#f7f4f1; --ink:#26221f; --muted:#6b6560;
+  /* Non-text only (rules, disabled chrome). Fails 4.5:1, so never sets copy. */
+  --faint:#a8a19b; --line:#ece6e0;
+  /* The brand orange, at the step that holds text: 5.2:1 on white, and white
+     on it the same. Buttons, links, focus. */
+  --accent:#c2410c; --accent-hover:#a3360a; --accent-soft:#fdeee4; --chip:#f3eee9;
+  /* The bright orange, decorative only: the logo's bars, the rail marker.
+     2.9:1 on white, so it marks and never sets running text. */
+  --rule:#f26b1d;
+  /* Text laid on --accent. A token rather than #fff because dark mode flips the
+     accent to a pale orange that wants dark text. */
   --on-accent:#ffffff;
   --good:#0a7d32; --warn:#8a5a00; --bad:#a33030;
-  --display:'Newsreader',Georgia,'Times New Roman',serif;
-  --ui:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  /* Warm washes behind product-shot moments: apricot for the hero, a deeper
+     terracotta blush for the closing band. Never behind copy that has to be
+     read at length. */
+  --wash-0:#f8f3ee; --wash-1:#fce6d6; --wash-2:#fdd7bb; --wash-3:#ffcaa1;
+  --band-0:#fbf7f4; --band-1:#fbe1d4; --band-2:#f5c6ae;
+  --footer-bg:#26221f; --footer-ink:#f6f1ec; --footer-muted:#ada59e; --footer-line:#48413b;
+  --shadow:0 1px 2px rgb(38 26 18/.05),0 12px 32px -12px rgb(38 26 18/.16);
+  --display:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --ui:'Geist',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){
-  :root{ --bg:#121611; --card:#1a1f18; --ink:#e9e6dd; --muted:#9aa196; --line:#2c342a;
-         --accent:#8fc0a4; --accent-soft:#1b2a20; --chip:#232b21;
-         --rule:#c9a253; --on-accent:#0e1310;
-         --good:#6fc98f; --warn:#e0b26a; --bad:#f09a92; }
+  :root{ --bg:#151311; --card:#1c1916; --sunk:#201c19; --ink:#efe9e3; --muted:#aaa199;
+         --faint:#6f6760; --line:#2f2a26;
+         --accent:#ff8f4f; --accent-hover:#ffa673; --accent-soft:#2e1b10; --chip:#28231f;
+         --rule:#ff7a2e; --on-accent:#1a0d05;
+         --good:#6fc98f; --warn:#e0b26a; --bad:#f09a92;
+         --wash-0:#171412; --wash-1:#1f1611; --wash-2:#281a10; --wash-3:#311d0e;
+         --band-0:#171412; --band-1:#221713; --band-2:#2e1a12;
+         --footer-bg:#0e0c0b; --footer-ink:#efe9e3; --footer-muted:#958c84; --footer-line:#2f2a26;
+         --shadow:0 1px 2px rgb(0 0 0/.4),0 12px 32px -12px rgb(0 0 0/.6); }
 }
 *{box-sizing:border-box}
-body{margin:0;font:16px/1.6 var(--ui);background:var(--bg);color:var(--ink);padding:0}
-/* One shell for all three pages — the gutters and measure must not shift when
-   you click between them. Page padding lives here rather than on body so the
-   masthead bar can sit flush at the top. */
-.wrap{max-width:1120px;margin:0 auto;padding:0 24px 80px}
-h1{font-family:var(--display);font-weight:600;font-size:33px;line-height:1.15;letter-spacing:-.005em;margin:0 0 8px}
-/* Measure, not pixels. At 16px this lands around 70 characters — past ~75 the
-   eye loses the line it is returning to. */
-.sub{color:var(--muted);max-width:70ch;margin:0 0 24px}
+/* clip, not hidden: the full-bleed bands paint past the measure with
+   pseudo-elements, and `hidden` would make body a scroll container and break
+   every sticky bar on the site. */
+body{margin:0;font:15px/1.6 var(--ui);letter-spacing:-.01em;background:var(--bg);color:var(--ink);
+  padding:0;overflow-x:clip;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+/* One shell for every page — the gutters and measure must not shift when you
+   click between them. No bottom padding: the footer is the last thing on every
+   page and carries its own. */
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(36px,5vw,52px);line-height:1.02;
+  letter-spacing:-.03em;margin:8px 0 14px}
+h2,h3{font-family:var(--display);font-weight:400}
+/* Measure, not pixels. At 15–16px this lands around 70 characters. */
+.sub{color:var(--muted);max-width:70ch;margin:0 0 28px;font-size:16px}
+code{font-family:var(--mono);font-size:.88em;letter-spacing:0}
 
-/* Masthead bar: brand lockup left, section nav right, hairline under. Identical
-   on every page, so only the `.here` link and the h1 beneath it change.
+/* Masthead bar: brand lockup left, section nav right, the last link a pill.
+   Identical on every page, so only the `.here` link changes.
 
-   Sticky, so the brand and the section nav stay reachable down a 45-card
-   catalogue or an eleven-section report. It needs an opaque background and a
-   z-index above the report's own sticky anchor strip, which docks beneath it —
-   see --topbar-h. */
-.topbar{position:sticky;top:0;z-index:20;background:var(--bg);
+   Sticky and frosted, so the brand and the nav stay reachable down a 45-card
+   catalogue or an eleven-section report without a hard block of colour across
+   the top. Its backdrop is a pseudo-element running edge to edge while the
+   content keeps the shared measure. It sits above the report's own sticky
+   anchor strip, which docks beneath it — see --topbar-h. */
+.topbar{position:sticky;top:0;z-index:20;isolation:isolate;
   display:flex;justify-content:space-between;align-items:center;gap:16px;
-  flex-wrap:wrap;padding:16px 0 14px;margin:0 0 30px;border-bottom:1px solid var(--line)}
+  flex-wrap:wrap;padding:13px 0;margin:0 0 36px}
+.topbar::before{content:"";position:absolute;inset:0 -100vmax;z-index:-1;
+  background:color-mix(in srgb,var(--bg) 82%,transparent);
+  -webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px);
+  border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+/* The landing page's bar lives outside .wrap so it can float over the hero. */
+.topbar.solo{max-width:1120px;margin:0 auto;padding-left:24px;padding-right:24px}
+.topbar.solo::before{inset:0 calc(-100vmax + 24px)}
 
 /* Height of the bar, published so a second sticky element can sit under it.
    js/topbar.js keeps this exact — the fallback matters only for the first
    paint and for anyone with JS off. */
-:root{--topbar-h:66px}
+:root{--topbar-h:62px}
 
 /* The lockup: keyline house with a rising bar chart inside it. The house is ink
-   and inherits currentColor so the hover state carries both halves; the bars are
-   brass. It is a graphic, never the only carrier of meaning, and the wordmark
-   next to it always says the name in full. */
-.topbar .mark{display:inline-flex;align-items:center;gap:10px;
-  font-family:var(--display);font-weight:600;font-size:19px;
-  letter-spacing:.005em;color:var(--ink);text-decoration:none;white-space:nowrap}
-.topbar .mark:hover{color:var(--accent)}
-.logo{width:29px;height:29px;flex:none;display:block}
-.logo .house{fill:none;stroke:currentColor;stroke-width:2.1;stroke-linejoin:round}
+   and inherits currentColor; the bars are gold. It is a graphic, never the only
+   carrier of meaning — the wordmark next to it always says the name in full. */
+.topbar .mark{display:inline-flex;align-items:center;gap:9px;
+  font-family:var(--display);font-weight:400;font-size:19px;
+  letter-spacing:-.025em;color:var(--ink);text-decoration:none;white-space:nowrap}
+.topbar .mark:hover{opacity:.75}
+.logo{width:26px;height:26px;flex:none;display:block}
+.logo .house{fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
 .logo .bars{stroke:var(--rule);stroke-width:2.3;stroke-linecap:round;fill:none}
-.topbar .nav{margin:0}
+.topbar .nav{margin:0;align-items:center}
 
-/* Four sections wrap to three rows on a phone, and a sticky bar that deep eats
-   a fifth of the screen for good. Below this width the lockup shrinks and the
-   nav becomes one scrollable row — the same move the report already makes with
-   its category anchors. */
-@media (max-width:560px){
-  .topbar{padding:12px 0 10px;margin:0 0 22px;gap:10px}
+.nav{display:flex;gap:2px;font-size:14px;margin:0 0 18px}
+.nav a{color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:999px;
+  transition:color .15s,background-color .15s}
+.nav a:hover{color:var(--ink);background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.nav a.here{color:var(--ink)}
+/* The last section is the call to action, a soft orange pill. On its own
+   page it fills, so "you are here" still reads. */
+.nav a:last-child{color:var(--accent);background:var(--accent-soft);margin-left:10px;font-weight:500}
+.nav a:last-child:hover{color:var(--accent-hover);background:color-mix(in srgb,var(--accent) 16%,var(--bg))}
+.nav a:last-child.here{background:var(--accent);color:var(--on-accent)}
+
+/* Four sections in a 375px bar do not fit on one row. Below this width the
+   lockup shrinks and the nav becomes one scrollable row — the same move the
+   report already makes with its category anchors. */
+@media (max-width:640px){
+  .topbar{padding:10px 0 8px;margin:0 0 24px;gap:6px}
+  .topbar.solo{padding-left:16px;padding-right:16px}
+  .topbar.solo::before{inset:0 calc(-100vmax + 16px)}
   .topbar .mark{font-size:17px;gap:8px}
-  .logo{width:25px;height:25px}
+  .logo{width:23px;height:23px}
   .topbar .nav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
-    width:100%;gap:16px;scrollbar-width:none;
+    gap:0;scrollbar-width:none;margin:0 0 0 -12px;width:calc(100% + 12px);
     /* The last section is clipped mid-word with the scrollbar hidden, which
        reads as a rendering fault rather than as "there is more". Fading the
        edge is the only cue left that it scrolls. */
@@ -113,56 +159,74 @@ h1{font-family:var(--display);font-weight:600;font-size:33px;line-height:1.15;le
     mask-image:linear-gradient(to right,#000 calc(100% - 26px),transparent)}
   .topbar .nav::-webkit-scrollbar{display:none}
   .topbar .nav a{white-space:nowrap}
+  .nav a:last-child{margin-left:4px;margin-right:24px}
 }
 
-.nav{display:flex;gap:18px;font-size:14px;margin:0 0 18px}
-.nav a{color:var(--muted);text-decoration:none;border-bottom:2px solid transparent;padding-bottom:2px}
-.nav a.here{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
-.nav a:hover{color:var(--accent)}
-
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
-input[type=search],input[type=text],input[type=password]{flex:1;min-width:240px;padding:11px 14px;border:1px solid var(--line);border-radius:4px;background:var(--card);color:var(--ink);font-family:inherit;font-size:16px;outline:none}
-input:focus{border-color:var(--accent)}
+input[type=search],input[type=text],input[type=password]{flex:1;min-width:240px;padding:11px 18px;
+  border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);
+  font-family:inherit;font-size:16px;outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 16%,transparent)}
 /* The postcode fields uppercase what you type. The example should not be
    shouted back at you, on either page. */
-input::placeholder{text-transform:none;letter-spacing:normal}
+/* --muted, not --faint: a placeholder is text and has to clear 4.5:1. */
+input::placeholder{text-transform:none;letter-spacing:normal;color:var(--muted);opacity:1}
 
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.filters button,.pill{border:1px solid var(--line);background:var(--card);color:var(--muted);padding:7px 13px;border-radius:999px;font-family:inherit;font-size:13.5px;cursor:pointer;text-decoration:none;display:inline-block}
-.filters button.active,.pill.active{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
-select{padding:9px 12px;border:1px solid var(--line);border-radius:4px;background:var(--card);color:var(--ink);font-family:inherit;font-size:14.5px}
-.btn{border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);padding:11px 17px;border-radius:4px;font-family:inherit;font-size:14.5px;font-weight:500;cursor:pointer}
-.btn.ghost{background:var(--card);color:var(--accent)}
-.btn:disabled{opacity:.5;cursor:default}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px}
+.filters button,.pill{border:0;background:var(--chip);color:var(--muted);padding:7px 13px;border-radius:999px;
+  font-family:inherit;font-size:13.5px;cursor:pointer;text-decoration:none;display:inline-block;
+  transition:background-color .15s,color .15s}
+.filters button:hover{color:var(--ink)}
+.filters button.active,.pill.active{background:var(--ink);color:var(--bg)}
+select{padding:9px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font-family:inherit;font-size:14.5px}
+/* Primary action is the brand orange, the one solid thing on a page. */
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);padding:10px 20px;border-radius:999px;
+  font-family:inherit;font-size:14.5px;font-weight:500;letter-spacing:-.005em;cursor:pointer;
+  transition:opacity .15s,background-color .15s,transform .1s}
+.btn:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:color-mix(in srgb,var(--ink) 7%,transparent);border-color:transparent;color:var(--ink)}
+.btn.ghost:hover{border-color:transparent;background:color-mix(in srgb,var(--ink) 12%,transparent)}
+.btn:disabled{opacity:.45;cursor:default}
 
 .count{color:var(--muted);font-size:13.5px;margin:0 0 14px}
 /* Deep-linked cards (registry.html#src-epc) must clear the sticky masthead. */
-.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin-bottom:14px;
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:12px;
   scroll-margin-top:calc(var(--topbar-h) + 14px)}
-.card h2{font-family:var(--display);font-weight:600;font-size:21px;line-height:1.3;margin:0 0 3px}
+.card h2{font-family:var(--display);font-weight:400;font-size:22px;line-height:1.15;letter-spacing:-.02em;margin:0 0 4px}
 .pub{color:var(--muted);font-size:13.5px;margin:0 0 12px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
-.chip{background:var(--chip);color:var(--muted);border-radius:3px;padding:3px 9px;font-size:12.5px}
+.chip{background:var(--chip);color:var(--muted);border-radius:999px;padding:3px 10px;font-size:12.5px}
 .chip.cat{background:var(--accent-soft);color:var(--accent);font-weight:600}
 .links{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;margin:0 0 12px}
 .links a,a.src{color:var(--accent);text-decoration:none;word-break:break-all}
-.links a:hover{text-decoration:underline}
-.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.5;background:var(--chip);border-radius:4px;padding:9px 11px;margin:0 0 12px;word-break:break-all;color:var(--ink)}
+.links a:hover,a.src:hover{color:var(--accent-hover);text-decoration:underline}
+.mono{font-family:var(--mono);font-size:13px;line-height:1.5;background:var(--sunk);border-radius:12px;padding:10px 12px;margin:0 0 12px;word-break:break-all;color:var(--ink)}
 .mono b{color:var(--muted);font-weight:600;font-family:inherit}
 
-/* The particulars caption: LICENCE, COVERAGE, UPDATE CADENCE. `.qhead` predates
-   it and is the same thing, kept so existing markup does not have to change. */
-.label,.qhead{font-size:11.5px;text-transform:uppercase;letter-spacing:.13em;color:var(--muted);font-weight:700;margin:0 0 6px}
+/* The small caption over a heading: LICENCE, COVERAGE, "For agents". Sentence
+   case, muted, medium weight. `.qhead` predates it and is the same thing. */
+.label,.qhead{font-size:13px;color:var(--muted);font-weight:500;letter-spacing:-.005em;margin:0 0 8px}
 
-/* Brochure double rule — a hairline under a brass keyline. */
-.rule{border:0;border-top:2px solid var(--rule);margin:0 0 18px;position:relative}
-.rule::after{content:"";position:absolute;left:0;right:0;top:3px;border-top:1px solid var(--line)}
+/* Kept for any markup that still uses it: a plain hairline now. */
+.rule{border:0;border-top:1px solid var(--line);margin:0 0 18px}
 
 /* Figures are compared down columns far more than they are read in prose. */
 .num,.figure,td.num{font-variant-numeric:tabular-nums}
 
-footer{color:var(--muted);font-size:13.5px;line-height:1.6;margin-top:32px;border-top:1px solid var(--line);padding-top:16px}
-footer p{margin:0 0 10px;max-width:80ch}
+/* Dark full-bleed footer, the one inverted surface on the site. */
+footer{position:relative;isolation:isolate;background:var(--footer-bg);color:var(--footer-muted);
+  font-size:13.5px;line-height:1.65;margin-top:96px;padding:48px 0 64px}
+footer::before{content:"";position:absolute;inset:0 -100vmax;z-index:-1;background:var(--footer-bg)}
+footer p{margin:0 0 12px;max-width:82ch}
+footer strong,footer b{color:var(--footer-ink);font-weight:500}
+footer a,footer a.src{color:var(--footer-ink);text-decoration:underline;text-decoration-color:var(--footer-line);text-underline-offset:3px}
+footer a:hover{text-decoration-color:currentColor}
+footer code{color:var(--footer-ink)}
 .err{color:var(--bad)}
 
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important;animation:none !important}
+}
