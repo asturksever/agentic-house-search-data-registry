@@ -18,7 +18,7 @@
 .steps ol{list-style:none;margin:0;padding:0;display:grid;gap:26px}
 .steps li{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
 .steps .n{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;
-  background:var(--ink);color:var(--bg);font-size:13.5px;font-weight:500;font-variant-numeric:tabular-nums}
+  background:var(--accent);color:var(--on-accent);font-size:13.5px;font-weight:500;font-variant-numeric:tabular-nums}
 .step-body{min-width:0}
 .step-title{font-family:var(--display);font-weight:400;font-size:24px;line-height:1.15;letter-spacing:-.025em;margin:2px 0 12px}
 .step-note{margin:0;color:var(--muted);font-size:15px;line-height:1.65;max-width:58ch}

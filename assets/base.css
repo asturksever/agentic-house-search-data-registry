@@ -1,100 +1,94 @@
 /* Shared shell: colour system, typography and the primitives (card, chip, pill
    button, links, footer) used by every page.
 
-   The look is quiet product-studio rather than property portal: near-monochrome
-   ink on white, a book serif at regular weight for display type only, a neutral
-   grotesque for everything else, pill controls, and soft pastel washes behind
-   the few places that should feel like a product shot. Colour is spent on
-   status and on links — nowhere else — so the report's red/amber/green tones
-   still read as readings rather than decoration.
+   The look is quiet product-studio rather than property portal: warm-neutral
+   ink on white, a display serif at regular weight for headings only, a neutral
+   grotesque for everything else, pill controls, and one brand colour: orange.
+   Orange is spent on actions, links and the brand mark. The report's status
+   scale (green, amber, red) is a separate reserved set, and orange is kept off
+   anything that could be read as a rating.
 
    Shape scale: anything you press is a pill; outer containers are 16px;
    anything nested inside one is 12px. */
 
-/* PT Serif for display, Instrument Sans for everything else. Both are Latin
+/* Source Serif 4 for display, Geist for everything else. Both are Latin
    subsets and self-hosted, so no page makes a third-party request and the
    report's CSP (font-src 'self') holds.
 
-   PT Serif is set at 400 only, tracked tight. Its regular weight carries a
-   masthead on its own and still holds up at the 19–22px of the 45 dataset
-   titles down the catalogue — a display-only serif would not. Instrument Sans
-   is variable across weight, so the 600–650 the report tiles ask for is real
+   Source Serif 4 ships an optical-size axis; this file is instanced at opsz 48,
+   its display cut, with weight left variable from 300 to 600. Pinning the axis
+   keeps the sharp, high-contrast headline drawing and halves the file (47 KB
+   against 122 KB for the full axis). The display cut is still comfortable at
+   the 22px of the dataset titles, the smallest serif on the site. Geist is
+   variable across weight, so the 600-650 the report tiles ask for is real
    rather than synthesised. */
 @font-face{
-  font-family:'PT Serif';
+  font-family:'Source Serif 4';
   font-style:normal;
-  font-weight:400;
+  font-weight:300 600;
   font-display:swap;
-  src:url('fonts/pt-serif-latin.woff2') format('woff2');
+  src:url('fonts/source-serif-4-display-latin.woff2') format('woff2');
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,
     U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face{
-  font-family:'PT Serif';
-  font-style:italic;
-  font-weight:400;
-  font-display:swap;
-  src:url('fonts/pt-serif-latin-italic.woff2') format('woff2');
-  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,
-    U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face{
-  font-family:'Instrument Sans';
+  font-family:'Geist';
   font-style:normal;
-  font-weight:400 700;
+  font-weight:100 900;
   font-display:swap;
-  src:url('fonts/instrument-sans-latin.woff2') format('woff2');
+  src:url('fonts/geist-latin.woff2') format('woff2');
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,
     U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 
 :root{
-  --bg:#ffffff; --card:#ffffff; --sunk:#f5f4f1; --ink:#292929; --muted:#6b6b69;
+  --bg:#ffffff; --card:#ffffff; --sunk:#f7f4f1; --ink:#26221f; --muted:#6b6560;
   /* Non-text only (rules, disabled chrome). Fails 4.5:1, so never sets copy. */
-  --faint:#a3a29e; --line:#e9e7e2;
-  /* Links, focus and the "live" badge. A deep green kept from the original
-     brand, so the site is still recognisably itself in the one colour it uses. */
-  --accent:#2b5a47; --accent-soft:#e8efea; --chip:#f0eee9;
-  /* Decorative gold — the logo's bars and the step numerals. 2.3:1 on white, so
-     it marks and never sets running text. */
-  --rule:#c9a227;
-  /* Text laid on --accent or --ink. A token rather than #fff because dark mode
-     flips both to pale. */
+  --faint:#a8a19b; --line:#ece6e0;
+  /* The brand orange, at the step that holds text: 5.2:1 on white, and white
+     on it the same. Buttons, links, focus. */
+  --accent:#c2410c; --accent-hover:#a3360a; --accent-soft:#fdeee4; --chip:#f3eee9;
+  /* The bright orange, decorative only: the logo's bars, the rail marker.
+     2.9:1 on white, so it marks and never sets running text. */
+  --rule:#f26b1d;
+  /* Text laid on --accent. A token rather than #fff because dark mode flips the
+     accent to a pale orange that wants dark text. */
   --on-accent:#ffffff;
   --good:#0a7d32; --warn:#8a5a00; --bad:#a33030;
-  /* Pastel washes behind product-shot moments. Warm sun for the hero, lilac
-     for the closing band — never behind body copy that has to be read. */
-  --sun-0:#efece6; --sun-1:#f2ebc6; --sun-2:#f7eeb0; --sun-3:#fbf1a0;
-  --lilac-0:#f6f4f9; --lilac-1:#e7e0f5; --lilac-2:#d8cdf0;
-  --footer-bg:#292929; --footer-ink:#f2f1ee; --footer-muted:#a8a7a3; --footer-line:#4a4a47;
-  --shadow:0 1px 2px rgb(20 20 20/.04),0 12px 32px -12px rgb(20 20 20/.12);
-  --display:'PT Serif',Georgia,'Times New Roman',serif;
-  --ui:'Instrument Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  /* Warm washes behind product-shot moments: apricot for the hero, a deeper
+     terracotta blush for the closing band. Never behind copy that has to be
+     read at length. */
+  --wash-0:#f8f3ee; --wash-1:#fce6d6; --wash-2:#fdd7bb; --wash-3:#ffcaa1;
+  --band-0:#fbf7f4; --band-1:#fbe1d4; --band-2:#f5c6ae;
+  --footer-bg:#26221f; --footer-ink:#f6f1ec; --footer-muted:#ada59e; --footer-line:#48413b;
+  --shadow:0 1px 2px rgb(38 26 18/.05),0 12px 32px -12px rgb(38 26 18/.16);
+  --display:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --ui:'Geist',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){
-  :root{ --bg:#141414; --card:#1b1b1a; --sunk:#1f1f1d; --ink:#ecebe8; --muted:#a5a49f;
-         --faint:#6d6c68; --line:#2d2d2a;
-         --accent:#9cc7b2; --accent-soft:#1b2922; --chip:#262624;
-         --rule:#d9b84a; --on-accent:#111111;
+  :root{ --bg:#151311; --card:#1c1916; --sunk:#201c19; --ink:#efe9e3; --muted:#aaa199;
+         --faint:#6f6760; --line:#2f2a26;
+         --accent:#ff8f4f; --accent-hover:#ffa673; --accent-soft:#2e1b10; --chip:#28231f;
+         --rule:#ff7a2e; --on-accent:#1a0d05;
          --good:#6fc98f; --warn:#e0b26a; --bad:#f09a92;
-         --sun-0:#161615; --sun-1:#1d1b14; --sun-2:#242013; --sun-3:#2a2512;
-         --lilac-0:#161616; --lilac-1:#1c1a24; --lilac-2:#241f33;
-         --footer-bg:#0c0c0c; --footer-ink:#ecebe8; --footer-muted:#8f8e8a; --footer-line:#3a3a37;
+         --wash-0:#171412; --wash-1:#1f1611; --wash-2:#281a10; --wash-3:#311d0e;
+         --band-0:#171412; --band-1:#221713; --band-2:#2e1a12;
+         --footer-bg:#0e0c0b; --footer-ink:#efe9e3; --footer-muted:#958c84; --footer-line:#2f2a26;
          --shadow:0 1px 2px rgb(0 0 0/.4),0 12px 32px -12px rgb(0 0 0/.6); }
 }
 *{box-sizing:border-box}
 /* clip, not hidden: the full-bleed bands paint past the measure with
    pseudo-elements, and `hidden` would make body a scroll container and break
    every sticky bar on the site. */
-body{margin:0;font:15px/1.6 var(--ui);letter-spacing:-.005em;background:var(--bg);color:var(--ink);
+body{margin:0;font:15px/1.6 var(--ui);letter-spacing:-.01em;background:var(--bg);color:var(--ink);
   padding:0;overflow-x:clip;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 /* One shell for every page — the gutters and measure must not shift when you
    click between them. No bottom padding: the footer is the last thing on every
    page and carries its own. */
 .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-h1{font-family:var(--display);font-weight:400;font-size:clamp(36px,5vw,52px);line-height:1;
-  letter-spacing:-.035em;margin:8px 0 14px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(36px,5vw,52px);line-height:1.02;
+  letter-spacing:-.03em;margin:8px 0 14px}
 h2,h3{font-family:var(--display);font-weight:400}
 /* Measure, not pixels. At 15–16px this lands around 70 characters. */
 .sub{color:var(--muted);max-width:70ch;margin:0 0 28px;font-size:16px}
@@ -141,11 +135,11 @@ code{font-family:var(--mono);font-size:.88em;letter-spacing:0}
   transition:color .15s,background-color .15s}
 .nav a:hover{color:var(--ink);background:color-mix(in srgb,var(--ink) 5%,transparent)}
 .nav a.here{color:var(--ink)}
-/* The last section is the call to action, a soft pill. On its own page it
-   fills, so "you are here" still reads. */
-.nav a:last-child{color:var(--ink);background:color-mix(in srgb,var(--ink) 8%,transparent);margin-left:10px}
-.nav a:last-child:hover{background:color-mix(in srgb,var(--ink) 13%,transparent)}
-.nav a:last-child.here{background:var(--ink);color:var(--bg)}
+/* The last section is the call to action, a soft orange pill. On its own
+   page it fills, so "you are here" still reads. */
+.nav a:last-child{color:var(--accent);background:var(--accent-soft);margin-left:10px;font-weight:500}
+.nav a:last-child:hover{color:var(--accent-hover);background:color-mix(in srgb,var(--accent) 16%,var(--bg))}
+.nav a:last-child.here{background:var(--accent);color:var(--on-accent)}
 
 /* Four sections in a 375px bar do not fit on one row. Below this width the
    lockup shrinks and the nav becomes one scrollable row — the same move the
@@ -172,7 +166,7 @@ code{font-family:var(--mono);font-size:.88em;letter-spacing:0}
 input[type=search],input[type=text],input[type=password]{flex:1;min-width:240px;padding:11px 18px;
   border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);
   font-family:inherit;font-size:16px;outline:none;transition:border-color .15s,box-shadow .15s}
-input:focus{border-color:var(--ink);box-shadow:0 0 0 3px color-mix(in srgb,var(--ink) 8%,transparent)}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 16%,transparent)}
 /* The postcode fields uppercase what you type. The example should not be
    shouted back at you, on either page. */
 /* --muted, not --faint: a placeholder is text and has to clear 4.5:1. */
@@ -185,14 +179,14 @@ input::placeholder{text-transform:none;letter-spacing:normal;color:var(--muted);
 .filters button:hover{color:var(--ink)}
 .filters button.active,.pill.active{background:var(--ink);color:var(--bg)}
 select{padding:9px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font-family:inherit;font-size:14.5px}
-/* Primary action is ink, not brand colour — the one solid thing on a page. */
-.btn{border:1px solid var(--ink);background:var(--ink);color:var(--bg);padding:10px 20px;border-radius:999px;
+/* Primary action is the brand orange, the one solid thing on a page. */
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);padding:10px 20px;border-radius:999px;
   font-family:inherit;font-size:14.5px;font-weight:500;letter-spacing:-.005em;cursor:pointer;
   transition:opacity .15s,background-color .15s,transform .1s}
-.btn:hover{opacity:.86}
+.btn:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
 .btn:active{transform:scale(.98)}
 .btn.ghost{background:color-mix(in srgb,var(--ink) 7%,transparent);border-color:transparent;color:var(--ink)}
-.btn.ghost:hover{opacity:1;background:color-mix(in srgb,var(--ink) 12%,transparent)}
+.btn.ghost:hover{border-color:transparent;background:color-mix(in srgb,var(--ink) 12%,transparent)}
 .btn:disabled{opacity:.45;cursor:default}
 
 .count{color:var(--muted);font-size:13.5px;margin:0 0 14px}
@@ -206,7 +200,7 @@ select{padding:9px 14px;border:1px solid var(--line);border-radius:999px;backgro
 .chip.cat{background:var(--accent-soft);color:var(--accent);font-weight:600}
 .links{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;margin:0 0 12px}
 .links a,a.src{color:var(--accent);text-decoration:none;word-break:break-all}
-.links a:hover{text-decoration:underline}
+.links a:hover,a.src:hover{color:var(--accent-hover);text-decoration:underline}
 .mono{font-family:var(--mono);font-size:13px;line-height:1.5;background:var(--sunk);border-radius:12px;padding:10px 12px;margin:0 0 12px;word-break:break-all;color:var(--ink)}
 .mono b{color:var(--muted);font-weight:600;font-family:inherit}
 

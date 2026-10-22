@@ -82,7 +82,8 @@
 
 .badge{font-size:12px;font-weight:500;
   border-radius:999px;padding:3px 10px;background:var(--chip);color:var(--muted)}
-.badge.live{background:var(--accent-soft);color:var(--accent)}
+/* Neutral, not brand orange: on this page orange would read as a status. */
+.badge.live{background:var(--chip);color:var(--ink)}
 .badge.unavailable,.badge.out_of_coverage{color:var(--muted)}
 .badge.error{color:var(--bad)}
 
