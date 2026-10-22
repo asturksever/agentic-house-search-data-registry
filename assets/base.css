@@ -66,8 +66,7 @@
   --ui:'Geist',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 }
-@media (prefers-color-scheme: dark){
-  :root{ --bg:#151311; --card:#1c1916; --sunk:#201c19; --ink:#efe9e3; --muted:#aaa199;
+:root[data-theme="dark"]{ --bg:#151311; --card:#1c1916; --sunk:#201c19; --ink:#efe9e3; --muted:#aaa199;
          --faint:#6f6760; --line:#2f2a26;
          --accent:#ff8f4f; --accent-hover:#ffa673; --accent-soft:#2e1b10; --chip:#28231f;
          --rule:#ff7a2e; --on-accent:#1a0d05;
@@ -76,11 +75,23 @@
          --band-0:#171412; --band-1:#221713; --band-2:#2e1a12;
          --footer-bg:#0e0c0b; --footer-ink:#efe9e3; --footer-muted:#958c84; --footer-line:#2f2a26;
          --shadow:0 1px 2px rgb(0 0 0/.4),0 12px 32px -12px rgb(0 0 0/.6); }
-}
+/* Light is the designed default whatever the OS says; dark is opt-in via the
+   top-bar toggle (js/theme.js sets data-theme on <html>). color-scheme makes
+   native scrollbars and form controls follow. */
+:root{color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
 *{box-sizing:border-box}
-/* clip, not hidden: the full-bleed bands paint past the measure with
-   pseudo-elements, and `hidden` would make body a scroll container and break
-   every sticky bar on the site. */
+/* The full-bleed bands paint past the measure with pseudo-elements, so that
+   overflow has to be clipped somewhere nothing can scroll it.
+
+   On body alone, overflow-x propagates to the viewport, where clip is treated
+   as hidden: no scrollbar, but scrollIntoView and anchor jumps can still pan
+   the page sideways (it was measured drifting 519px). Setting it on html as
+   well means html's value goes to the viewport and body keeps a true clip at
+   its own edges, so no sideways overflow ever reaches the viewport. clip
+   rather than hidden on body, because hidden would make body a scroll
+   container and break every sticky bar on the site. */
+html{overflow-x:clip}
 body{margin:0;font:15px/1.6 var(--ui);letter-spacing:-.01em;background:var(--bg);color:var(--ink);
   padding:0;overflow-x:clip;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 /* One shell for every page — the gutters and measure must not shift when you
@@ -128,7 +139,16 @@ code{font-family:var(--mono);font-size:.88em;letter-spacing:0}
 .logo{width:26px;height:26px;flex:none;display:block}
 .logo .house{fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
 .logo .bars{stroke:var(--rule);stroke-width:2.3;stroke-linecap:round;fill:none}
-.topbar .nav{margin:0;align-items:center}
+.topbar .nav{margin:0 0 0 auto;align-items:center}
+
+/* Theme toggle, injected by js/theme.js as the bar's last child. A quiet
+   circle beside the nav; the glyph shows where a press will take you. */
+.theme-toggle{display:grid;place-items:center;width:34px;height:34px;flex:none;margin-left:-6px;
+  border:0;border-radius:999px;background:transparent;color:var(--muted);cursor:pointer;
+  transition:color .15s,background-color .15s,transform .1s}
+.theme-toggle:hover{color:var(--ink);background:color-mix(in srgb,var(--ink) 6%,transparent)}
+.theme-toggle:active{transform:scale(.94)}
+.theme-toggle svg{width:18px;height:18px;fill:currentColor}
 
 .nav{display:flex;gap:2px;font-size:14px;margin:0 0 18px}
 .nav a{color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:999px;
@@ -160,6 +180,8 @@ code{font-family:var(--mono);font-size:.88em;letter-spacing:0}
   .topbar .nav::-webkit-scrollbar{display:none}
   .topbar .nav a{white-space:nowrap}
   .nav a:last-child{margin-left:4px;margin-right:24px}
+  .theme-toggle{order:1;margin-left:auto}
+  .topbar .nav{order:2}
 }
 
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}

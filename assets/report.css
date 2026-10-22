@@ -16,8 +16,7 @@
   --tone-good-soft:#e4efe3; --tone-neutral-soft:#eeeae0;
   --tone-watch-soft:#f7eeda; --tone-poor-soft:#f8e5e0;
 }
-@media (prefers-color-scheme: dark){
-  :root{
+:root[data-theme="dark"]{
     /* Dark mode inverts the brand accent to a pale sage, which lands close to a
        muted "good" green — a good tile then reads as branding. This step is kept
        markedly more saturated than the accent so the two stay tellable apart;
@@ -26,7 +25,6 @@
     --tone-good-soft:#152b1c; --tone-neutral-soft:#232b21;
     --tone-watch-soft:#2f2512; --tone-poor-soft:#331a17;
   }
-}
 
 .searchrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 10px}
 .searchrow input{max-width:280px;text-transform:uppercase}

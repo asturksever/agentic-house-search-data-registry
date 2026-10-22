@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agentic House Search | UK neighbourhood data, from the source</title>
 <meta name="description" content="Enter a UK postcode, get what government open data actually says about that neighbourhood. A registry of 45 open UK datasets, a live postcode report, and an MCP server.">
-<meta name="theme-color" content="#f8f3ee" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#151311" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff">
 <script>
   // The catalogue used to live at this URL. Forward old deep links rather than
   // dropping someone who wanted one dataset onto a hero they did not ask for.
@@ -15,6 +14,7 @@
 <link rel="preload" href="assets/fonts/source-serif-4-display-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<script src="js/theme.js"></script>
 <link rel="stylesheet" href="assets/base.css">
 <link rel="stylesheet" href="assets/landing.css">
 </head>
@@ -110,11 +110,10 @@
     <div class="ways">
       <a class="way way-lead" href="report.html">
         <div class="shot shot-apricot">
-          <picture>
-            <source srcset="assets/shots/report-dark.jpg" media="(prefers-color-scheme: dark)">
-            <img src="assets/shots/report-light.jpg" width="1100" height="810" loading="lazy"
-                 alt="The postcode report for SW1A 1AA, Westminster: eleven category tiles with a figure and a band word each.">
-          </picture>
+          <span class="shot-frame">
+            <img class="img-light" src="assets/shots/report-light.jpg" width="1100" height="810" loading="lazy" alt="The postcode report for SW1A 1AA, Westminster: eleven category tiles with a figure and a band word each.">
+            <img class="img-dark" src="assets/shots/report-dark.jpg" width="1100" height="810" loading="lazy" alt="The postcode report for SW1A 1AA, Westminster: eleven category tiles with a figure and a band word each.">
+          </span>
         </div>
         <div class="way-body">
           <h3>Postcode report</h3>
@@ -125,11 +124,10 @@
       </a>
       <a class="way" href="connect.html">
         <div class="shot shot-blush">
-          <picture>
-            <source srcset="assets/shots/connect-dark.jpg" media="(prefers-color-scheme: dark)">
-            <img src="assets/shots/connect-light.jpg" width="1100" height="579" loading="lazy"
-                 alt="The connect page: copy the MCP URL, paste it into your AI, ask it about a postcode.">
-          </picture>
+          <span class="shot-frame">
+            <img class="img-light" src="assets/shots/connect-light.jpg" width="1100" height="579" loading="lazy" alt="The connect page: copy the MCP URL, paste it into your AI, ask it about a postcode.">
+            <img class="img-dark" src="assets/shots/connect-dark.jpg" width="1100" height="579" loading="lazy" alt="The connect page: copy the MCP URL, paste it into your AI, ask it about a postcode.">
+          </span>
         </div>
         <div class="way-body">
           <h3>MCP server</h3>
@@ -139,11 +137,10 @@
       </a>
       <a class="way" href="registry.html">
         <div class="shot shot-stone">
-          <picture>
-            <source srcset="assets/shots/registry-dark.jpg" media="(prefers-color-scheme: dark)">
-            <img src="assets/shots/registry-light.jpg" width="1100" height="810" loading="lazy"
-                 alt="The data registry: category filters above the entry for street-level crime from data.police.uk.">
-          </picture>
+          <span class="shot-frame">
+            <img class="img-light" src="assets/shots/registry-light.jpg" width="1100" height="810" loading="lazy" alt="The data registry: category filters above the entry for street-level crime from data.police.uk.">
+            <img class="img-dark" src="assets/shots/registry-dark.jpg" width="1100" height="810" loading="lazy" alt="The data registry: category filters above the entry for street-level crime from data.police.uk.">
+          </span>
         </div>
         <div class="way-body">
           <h3>Dataset registry</h3>
