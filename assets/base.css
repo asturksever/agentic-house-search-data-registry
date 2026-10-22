@@ -6,7 +6,10 @@
    grotesque for everything else, pill controls, and soft pastel washes behind
    the few places that should feel like a product shot. Colour is spent on
    status and on links — nowhere else — so the report's red/amber/green tones
-   still read as readings rather than decoration. */
+   still read as readings rather than decoration.
+
+   Shape scale: anything you press is a pill; outer containers are 16px;
+   anything nested inside one is 12px. */
 
 /* PT Serif for display, Instrument Sans for everything else. Both are Latin
    subsets and self-hosted, so no page makes a third-party request and the
@@ -47,6 +50,7 @@
 
 :root{
   --bg:#ffffff; --card:#ffffff; --sunk:#f5f4f1; --ink:#292929; --muted:#6b6b69;
+  /* Non-text only (rules, disabled chrome). Fails 4.5:1, so never sets copy. */
   --faint:#a3a29e; --line:#e9e7e2;
   /* Links, focus and the "live" badge. A deep green kept from the original
      brand, so the site is still recognisably itself in the one colour it uses. */
@@ -171,7 +175,8 @@ input[type=search],input[type=text],input[type=password]{flex:1;min-width:240px;
 input:focus{border-color:var(--ink);box-shadow:0 0 0 3px color-mix(in srgb,var(--ink) 8%,transparent)}
 /* The postcode fields uppercase what you type. The example should not be
    shouted back at you, on either page. */
-input::placeholder{text-transform:none;letter-spacing:normal;color:var(--faint)}
+/* --muted, not --faint: a placeholder is text and has to clear 4.5:1. */
+input::placeholder{text-transform:none;letter-spacing:normal;color:var(--muted);opacity:1}
 
 .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px}
 .filters button,.pill{border:0;background:var(--chip);color:var(--muted);padding:7px 13px;border-radius:999px;
@@ -183,15 +188,16 @@ select{padding:9px 14px;border:1px solid var(--line);border-radius:999px;backgro
 /* Primary action is ink, not brand colour — the one solid thing on a page. */
 .btn{border:1px solid var(--ink);background:var(--ink);color:var(--bg);padding:10px 20px;border-radius:999px;
   font-family:inherit;font-size:14.5px;font-weight:500;letter-spacing:-.005em;cursor:pointer;
-  transition:opacity .15s,background-color .15s}
+  transition:opacity .15s,background-color .15s,transform .1s}
 .btn:hover{opacity:.86}
+.btn:active{transform:scale(.98)}
 .btn.ghost{background:color-mix(in srgb,var(--ink) 7%,transparent);border-color:transparent;color:var(--ink)}
 .btn.ghost:hover{opacity:1;background:color-mix(in srgb,var(--ink) 12%,transparent)}
 .btn:disabled{opacity:.45;cursor:default}
 
 .count{color:var(--muted);font-size:13.5px;margin:0 0 14px}
 /* Deep-linked cards (registry.html#src-epc) must clear the sticky masthead. */
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:12px;
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:12px;
   scroll-margin-top:calc(var(--topbar-h) + 14px)}
 .card h2{font-family:var(--display);font-weight:400;font-size:22px;line-height:1.15;letter-spacing:-.02em;margin:0 0 4px}
 .pub{color:var(--muted);font-size:13.5px;margin:0 0 12px}
@@ -201,7 +207,7 @@ select{padding:9px 14px;border:1px solid var(--line);border-radius:999px;backgro
 .links{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;margin:0 0 12px}
 .links a,a.src{color:var(--accent);text-decoration:none;word-break:break-all}
 .links a:hover{text-decoration:underline}
-.mono{font-family:var(--mono);font-size:13px;line-height:1.5;background:var(--sunk);border-radius:10px;padding:10px 12px;margin:0 0 12px;word-break:break-all;color:var(--ink)}
+.mono{font-family:var(--mono);font-size:13px;line-height:1.5;background:var(--sunk);border-radius:12px;padding:10px 12px;margin:0 0 12px;word-break:break-all;color:var(--ink)}
 .mono b{color:var(--muted);font-weight:600;font-family:inherit}
 
 /* The small caption over a heading: LICENCE, COVERAGE, "For agents". Sentence
