@@ -9,7 +9,8 @@ import { STATUS } from './facts.js';
 import { narrate, headlineFact } from './narrate.js';
 import { worstTone } from './thresholds.js';
 import { PROVIDERS } from './providers/index.js';
-import { mountAI, resetAI } from './ai.js';
+import { mountAI, resetAI, readSharedBrief } from './ai.js';
+import { shareLink, savePdf } from './share.js';
 
 const el = {
   form: document.getElementById('form'),
@@ -22,10 +23,17 @@ const el = {
   cards: document.getElementById('cards'),
   ai: document.getElementById('ai'),
   copylink: document.getElementById('copylink'),
+  savepdf: document.getElementById('savepdf'),
 };
 
 let registry = null;
 let currentRun = 0;
+let currentPlace = null;
+
+// A brief shared in the link (#brief=...) has to be read before the first run
+// rewrites the address, and only ever applies to that first run's postcode.
+let sharedBrief = readSharedBrief();
+const sharedHash = location.hash;
 
 const esc = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 
@@ -198,6 +206,7 @@ function clear() {
   el.anchors.hidden = true;
   el.progress.textContent = '';
   el.copylink.hidden = true;
+  el.savepdf.hidden = true;
 }
 
 function showPostcodeError(err) {
@@ -234,8 +243,14 @@ async function run(input) {
 
   el.pc.value = place.postcode;
   el.hint.textContent = 'Each section is fetched independently and appears as it arrives.';
-  history.replaceState(null, '', `?postcode=${encodeURIComponent(place.compact)}`);
+  const shared = await sharedBrief;
+  sharedBrief = null;
+  if (runId !== currentRun) return;
+  const keepBrief = shared && shared.postcode === place.compact;
+  history.replaceState(null, '', `?postcode=${encodeURIComponent(place.compact)}${keepBrief ? sharedHash : ''}`);
+  currentPlace = place;
   el.copylink.hidden = false;
+  el.savepdf.hidden = false;
   renderPlace(place);
 
   const active = PROVIDERS;
@@ -274,7 +289,7 @@ async function run(input) {
 
   if (runId !== currentRun) return;
   el.progress.textContent = `${active.length} sections loaded`;
-  mountAI(el.ai, place, settled.filter(Boolean));
+  mountAI(el.ai, place, settled.filter(Boolean), keepBrief ? shared : null);
 }
 
 /* -------------------------------------------------------------------- wiring */
@@ -292,13 +307,13 @@ el.hint.addEventListener('click', e => {
   run(eg);
 });
 
-el.copylink.addEventListener('click', async () => {
-  try {
-    await navigator.clipboard.writeText(location.href);
-    el.copylink.textContent = 'Link copied';
-    setTimeout(() => { el.copylink.textContent = 'Copy link'; }, 2000);
-  } catch { /* clipboard blocked — the URL bar already has it */ }
-});
+// The address bar always holds the shareable link: the postcode, plus the
+// brief once one exists (ai.js keeps the #fragment current).
+el.copylink.addEventListener('click', () =>
+  shareLink(el.copylink, location.href, `Postcode report: ${currentPlace?.postcode || ''}`));
+
+el.savepdf.addEventListener('click', () =>
+  savePdf(`Postcode report ${currentPlace?.postcode || ''}`.trim()));
 
 await ensureRegistry();
 if (!registry) {

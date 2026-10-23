@@ -125,8 +125,53 @@ details.notes p{color:var(--muted);font-size:14px;margin:8px 0 0}
 .skeleton .line.short{width:40%}
 @keyframes pulse{0%,100%{opacity:.55}50%{opacity:1}}
 
-.ai{border:1px dashed var(--line);border-radius:14px;padding:16px 18px;margin:0 0 16px}
+.ai{border:1px dashed var(--line);border-radius:16px;padding:18px 20px;margin:0 0 16px}
 .ai h3{margin:0 0 6px;font-size:16.5px}
+/* Once a brief is showing, the dashed "optional extra" box steps back so the
+   brief reads as the document, not as a card inside a card. */
+.ai.has-brief{border-color:transparent;padding:0}
+.ai.has-brief .ai-head{border:1px dashed var(--line);border-radius:16px;padding:14px 18px}
+.ai.has-brief .ai-head .pub{display:none}
+
+/* ---------------------------------------------------------- the area brief */
+/* Laid out like an agent's area brief: headline, the picture at a glance,
+   area by area, what to check, bottom line. Figure chips and tones come from
+   the computed facts; only the sentences come from the model. */
+.brief{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:30px 34px 22px;margin:14px 0 0;box-shadow:var(--shadow)}
+.brief-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px 24px;flex-wrap:wrap}
+.brief-top > div:first-child{flex:1 1 520px;min-width:0}
+.brief-kicker{font-size:13px;font-weight:500;color:var(--accent);margin:0 0 8px}
+.brief-headline{font-family:var(--display);font-weight:400;font-size:clamp(24px,3vw,32px);line-height:1.15;
+  letter-spacing:-.025em;margin:0 0 10px;max-width:40ch;text-wrap:balance}
+.brief-meta{font-size:13px;color:var(--muted);margin:0;max-width:64ch}
+.brief-actions{display:flex;gap:8px;flex-wrap:wrap}
+.brief-actions .btn{padding:8px 16px;font-size:13.5px}
+.brief-warn{margin:16px 0 0}
+.brief-block{margin:26px 0 0;padding:22px 0 0;border-top:1px solid var(--line)}
+.brief-label{font-family:var(--ui);font-size:12.5px;font-weight:600;color:var(--muted);margin:0 0 14px}
+
+.glance{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 32px}
+.glance li{display:flex;flex-direction:column;align-items:flex-start;gap:6px;font-size:14.5px;line-height:1.5}
+
+.brief-sections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 32px}
+.brief-sections .brief-label{grid-column:1 / -1;margin:0}
+.bsec h5{font-family:var(--display);font-weight:400;font-size:20px;line-height:1.2;letter-spacing:-.02em;margin:0 0 10px}
+.bsec h5 a{color:inherit;text-decoration:none}
+.bsec h5 a:hover{color:var(--accent)}
+.bsec .figs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.fig-chip{font-size:12.5px;line-height:1.4;background:var(--sunk);border:1px solid var(--line);border-radius:999px;
+  padding:3px 10px;color:var(--muted)}
+.fig-chip b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.bsec p:last-child{margin:0;font-size:15px;line-height:1.65}
+
+.check{margin:0;padding:0 0 0 20px;display:grid;gap:8px;font-size:15px;line-height:1.6}
+.check li::marker{color:var(--accent)}
+.brief-bottom p{margin:0;font-family:var(--display);font-size:clamp(18px,2vw,21px);line-height:1.5;
+  letter-spacing:-.01em;max-width:62ch}
+.brief-foot{margin:26px 0 0;padding:14px 0 0;border-top:1px solid var(--line);font-size:12.5px;
+  line-height:1.6;color:var(--muted)}
+.brief-usage{margin:10px 0 0}
 .ai .warn{color:var(--tone-watch);font-size:14px}
 .ai textarea{width:100%;min-height:120px;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
 .progress{color:var(--muted);font-size:14px;margin:0 0 12px}
@@ -143,12 +188,45 @@ details.notes p{color:var(--muted);font-size:14px;margin:8px 0 0}
   .fact{grid-template-columns:1fr}
   .fact .fvalue,.fact .fband{text-align:left}
   .fact .fband{grid-column:1}
+  .brief{padding:22px 18px 18px}
+  .glance,.brief-sections{grid-template-columns:minmax(0,1fr)}
 }
 
 @media print{
-  body{padding:0;background:#fff;color:#000}
-  .anchors,.searchrow,.hint,.ai,.nav,.btn{display:none !important}
+  /* "Save as PDF": the brief first, then the full report, on white. theme.js
+     drops to the light theme for the print, so every token is a light one. */
+  @page{margin:16mm 14mm}
+  body{background:#fff !important;color:#000}
+  .topbar,.theme-toggle,.anchors,.searchrow,.hint,.progress,.btn,.brief-actions,
+  .ai-head,.brief-usage,.wrap > h1,.wrap > .sub{display:none !important}
+  /* Lead with the brief: place, brief, the tiles, then the full report. */
+  .wrap{display:flex;flex-direction:column}
+  #place{order:1}
+  #ai{order:2}
+  #tiles{order:3}
+  #cards{order:4}
+  .wrap > footer{order:5}
+  /* The AI section prints only when there is a brief in it. */
+  .ai:not(.has-brief){display:none !important}
+  .brief{box-shadow:none;border-color:#ccc;padding:0;border:0;margin:0 0 18px}
+  /* Keep each category and each short block whole, but let the long "area by
+     area" run flow across pages instead of leaving half a page blank. */
+  .brief-block:not(.brief-sections),.bsec,.glance li{break-inside:avoid}
+  .brief-label{break-after:avoid}
+  /* A grid moves to the next page as one piece, so print the sections as a
+     plain flow that can break between categories. */
+  .brief-sections{display:block}
+  .brief-sections .brief-label{margin:0 0 14px}
+  .bsec + .bsec{margin-top:18px}
   .card,.place,.tile{break-inside:avoid;border-color:#ccc}
+  .place{background:#fff}
+  #cards{break-before:page}
+  #tiles{margin-top:8px}
   details.notes{display:block}
   details.notes[open] summary{list-style:none}
+  footer{background:#fff !important;color:#333;margin-top:24px;padding:12px 0 0;border-top:1px solid #ccc}
+  footer::before{display:none}
+  footer strong,footer a{color:#000}
+  a{color:inherit}
 }
+

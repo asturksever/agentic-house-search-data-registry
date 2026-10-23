@@ -65,6 +65,11 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
   else mount();
 
+  // Printing (and "Save as PDF") always uses the light palette: dark pages
+  // waste ink and read badly on paper. Restore the visitor's choice after.
+  window.addEventListener('beforeprint', function () { root.setAttribute('data-theme', 'light'); });
+  window.addEventListener('afterprint', function () { root.setAttribute('data-theme', saved()); });
+
   // Another tab changed the theme: follow it, so two open pages never disagree.
   window.addEventListener('storage', function (e) {
     if (e.key !== KEY) return;
